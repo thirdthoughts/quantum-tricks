@@ -8,3 +8,5 @@
 [ ] attach db for game lobby
 [ ] add auth
 [ ] game functionality
+[ ] analytics ? (posthog)
+[ ] rate limiting (upstash)
