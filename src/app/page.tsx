@@ -1,9 +1,35 @@
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
+
+const games = [];
 
 export default function HomePage() {
+  const [creating, setCreating] = useState(false);
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+    <div className="">
       Hello, Quantum Tricks in progress
-    </main>
+      {creating && (
+        <div>
+          TODO create a game{" "}
+          <button
+            className="bg-white/10 font-semibold transition hover:bg-white/20"
+            onMouseDown={() => setCreating(false)}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+      {!creating && (
+        <div>
+          <button
+            className="bg-white/10 font-semibold transition hover:bg-white/20"
+            onMouseDown={() => setCreating(true)}
+          >
+            New Game
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
