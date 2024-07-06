@@ -4,26 +4,40 @@ import { useState } from "react";
 
 const games = [];
 
+interface createGameProps {
+  onCancel: () => void;
+}
+
+function CreateGame({ onCancel }: createGameProps) {
+  return (
+    <div>
+      TODO create a game
+      Select Player Count
+      Select your color
+      <button
+        className="flex cursor-pointer select-none items-center justify-center rounded-lg border-2
+border-gray-800 bg-red-800"
+        onMouseDown={() => onCancel()}
+      >
+        Cancel
+      </button>
+    </div>
+  );
+}
+
 export default function HomePage() {
   const [creating, setCreating] = useState(false);
   return (
     <div className="">
       Hello, Quantum Tricks in progress
       {creating && (
-        <div>
-          TODO create a game{" "}
-          <button
-            className="bg-white/10 font-semibold transition hover:bg-white/20"
-            onMouseDown={() => setCreating(false)}
-          >
-            Cancel
-          </button>
-        </div>
+        <CreateGame onCancel={() => setCreating(false)}></CreateGame>
       )}
       {!creating && (
         <div>
           <button
-            className="bg-white/10 font-semibold transition hover:bg-white/20"
+            className="flex cursor-pointer select-none items-center justify-center rounded-lg border-2
+     border-gray-800 bg-green-800"
             onMouseDown={() => setCreating(true)}
           >
             New Game
