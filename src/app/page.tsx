@@ -6,19 +6,17 @@ import { z } from "zod";
 interface createGameProps {
   dismiss: () => void;
 }
+
 const gameSchema = z.object({
   playerCount: z.number().gte(3).lte(5),
   creator: z.string(),
-  players: z.object({
+  players: z.array(z.object({
     playerName: z.string(),
     playerSign: z.string(),
-  })
+  }))
 })
 
-
 const games : z.infer<typeof gameSchema>[] = [];
-
-
 
 function CreateGame({ dismiss }: createGameProps) {
   const [playerCount, setPlayerCount] = useState(4);
@@ -91,7 +89,7 @@ function CreateGame({ dismiss }: createGameProps) {
           <button
             className="flex-grow flex cursor-pointer select-none items-center justify-center rounded-lg border-2
  bg-green-800 p-1"
- onMouseDown={()=> {games.push({playerCount, creator:"Bob", players:{playerName: "Bob", playerSign: "Charm"}}); dismiss()}}
+ onMouseDown={()=> {games.push({playerCount, creator:"Bob", players:[{playerName: "Bob", playerSign: "Charm"}]}); dismiss()}}
           >
             Create
           </button>
