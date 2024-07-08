@@ -118,6 +118,20 @@ function CreateGame({ dismiss }: createGameProps) {
   );
 }
 
+function GameLobby({
+  index,
+  game,
+}: {
+  index: number;
+  game: z.infer<typeof gameSchema>;
+}) {
+  return (
+    <div key="index">
+      {game.playerCount}-player game created by {game.creator}
+    </div>
+  );
+}
+
 export default function HomePage() {
   const [creating, setCreating] = useState(false);
   return (
@@ -135,9 +149,7 @@ export default function HomePage() {
             New Game
           </button>
           {games.map((g, index) => (
-            <div key={index}>
-              {g.playerCount}-player game created by {g.creator}
-            </div>
+            <GameLobby index={index} game={g}></GameLobby>
           ))}
         </div>
       )}

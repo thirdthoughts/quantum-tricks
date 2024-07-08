@@ -4,7 +4,7 @@
 
 [x] make it deploy
 [x] scaffold basic UI with game lobby
-    [ ] create a game
+    [x] create a game
     [ ] see/join open games
     [ ] see your active games
 [ ] set up db for game lobby
