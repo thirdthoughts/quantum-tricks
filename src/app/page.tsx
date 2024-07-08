@@ -134,8 +134,8 @@ export default function HomePage() {
           >
             New Game
           </button>
-          {games.map((g) => (
-            <div>
+          {games.map((g, index) => (
+            <div key={index}>
               {g.playerCount}-player game created by {g.creator}
             </div>
           ))}
