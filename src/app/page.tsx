@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { z } from "zod";
+import { maxPlayers, minPlayers } from "~/util/constants";
 
 interface createGameProps {
   dismiss: () => void;
 }
 
 const gameSchema = z.object({
-  playerCount: z.number().gte(3).lte(5),
+  playerCount: z.number().gte(minPlayers).lte(maxPlayers),
   creator: z.string(),
   players: z
     .array(

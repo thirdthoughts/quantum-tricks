@@ -3,7 +3,7 @@ name: CI
 on: [push, pull_request]
 
 env:
-  DATABASE_URL: "https://fake.com"
+  POSTGRES_URL: "https://fake.com"
 
 jobs:
   build:
@@ -23,4 +23,4 @@ jobs:
         run: npm run lint
 
       - name: Print Environment Variable
-        run: echo $DATABASE_URL
+        run: echo $POSTGRES_URL
