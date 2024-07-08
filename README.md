@@ -10,7 +10,7 @@
 [ ] set up db for game lobby
 [ ] attach db for game lobby
 [ ] favicon
-[ ] add auth
+[x] add auth
 [ ] game functionality
 [ ] analytics ? (posthog)
 [ ] rate limiting (upstash)
