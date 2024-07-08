@@ -7,8 +7,8 @@
     [x] create a game
     [ ] see/join open games
     [ ] see your active games
-[ ] set up db for game lobby
-[ ] attach db for game lobby
+[x] set up db for game lobby
+[x] attach db for game lobby
 [ ] favicon
 [x] add auth
 [ ] game functionality
