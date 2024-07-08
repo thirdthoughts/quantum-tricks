@@ -3,7 +3,7 @@
 ## TODO
 
 [x] make it deploy
-[ ] scaffold basic UI with game lobby
+[x] scaffold basic UI with game lobby
     [ ] create a game
     [ ] see/join open games
     [ ] see your active games
