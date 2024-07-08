@@ -4,6 +4,8 @@ import { useState } from "react";
 import { z } from "zod";
 import { maxPlayers, minPlayers } from "~/util/constants";
 
+export const dynamic="force-dynamic";
+
 interface createGameProps {
   dismiss: () => void;
 }
@@ -22,7 +24,7 @@ const gameSchema = z.object({
     .max(5), //TODO consider making an "or" schema around each player count to make this max always match the game settings
 });
 
-const games: z.infer<typeof gameSchema>[] = [
+const games = [
   {
     playerCount: 3,
     creator: "Alice",
