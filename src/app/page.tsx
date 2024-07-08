@@ -21,7 +21,15 @@ const gameSchema = z.object({
     .max(5), //TODO consider making an "or" schema around each player count to make this max always match the game settings
 });
 
-const games: z.infer<typeof gameSchema>[] = [];
+const games: z.infer<typeof gameSchema>[] = [
+  {
+    playerCount: 3,
+    creator: "Alice",
+    players: [{ playerName: "Alice", playerSign: "Charm" }],
+  },
+];
+
+const player = "Bob";
 
 function CreateGame({ dismiss }: createGameProps) {
   const [playerCount, setPlayerCount] = useState(4);
@@ -118,16 +126,55 @@ function CreateGame({ dismiss }: createGameProps) {
   );
 }
 
+function JoinGame(game: z.infer<typeof gameSchema>, player:string) {
+  game.players.push({playerName:player, playerSign:"Spin"})
+}
+
 function GameLobby({
-  index,
   game,
 }: {
-  index: number;
   game: z.infer<typeof gameSchema>;
 }) {
+  const alreadyIn = game.players.some((e) => e.playerName === "Bob");
+
   return (
-    <div key="index">
-      {game.playerCount}-player game created by {game.creator}
+    <div className="flex flex-row gap-1">
+      <div className="flex w-1/12 bg-blue-700 p-1">{game.playerCount}</div>
+      <div className="flex w-1/2 bg-blue-700 p-1">{game.creator}</div>
+      <div className="flex w-1/4 bg-blue-700 p-1">
+        {game.playerCount - game.players.length}
+      </div>
+      {!alreadyIn && (
+        <div
+          className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-green-500 p-1"
+          onMouseDown={() => JoinGame(game, player)}
+        >
+          Join
+        </div>
+      )}
+      {alreadyIn && (
+        <div className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-red-500 p-1">
+          Leave
+        </div>
+      )}
+    </div>
+  );
+}
+4
+function GameLobbyList() {
+  return (
+    <div className="flex w-1/3 flex-col gap-1">
+      <div className="flex flex-row gap-1">
+        <div className="flex w-1/12 rounded-tl-lg bg-slate-500 p-1">#P</div>
+        <div className="flex w-1/2 bg-slate-500 p-1">Creator</div>
+        <div className="flex w-1/4 bg-slate-500 p-1">Open Seats</div>
+        <div className="flex w-1/6 justify-center rounded-tr-lg bg-slate-500 p-1">
+          Join
+        </div>
+      </div>
+      {games.map((g, i) => (
+        <GameLobby key={i} game={g}></GameLobby>
+      ))}
     </div>
   );
 }
@@ -140,7 +187,7 @@ export default function HomePage() {
       <div className="h-4"></div>
       {creating && <CreateGame dismiss={() => setCreating(false)}></CreateGame>}
       {!creating && (
-        <div>
+        <>
           <button
             className="flex cursor-pointer select-none items-center justify-center rounded-lg border-2
      border-gray-800 bg-green-800 p-1"
@@ -148,10 +195,8 @@ export default function HomePage() {
           >
             New Game
           </button>
-          {games.map((g, index) => (
-            <GameLobby index={index} game={g}></GameLobby>
-          ))}
-        </div>
+          <GameLobbyList></GameLobbyList>
+        </>
       )}
     </div>
   );
