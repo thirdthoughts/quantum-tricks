@@ -1,10 +1,12 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createGameLobby } from "~/server/db/actions";
 
 export default function CreateGame() {
   const [playerCount, setPlayerCount] = useState(4);
+  const router = useRouter()
   return (
     <div className="justify-center gap-1 text-center items-center m-auto">
       <div>New Game</div>
@@ -77,6 +79,7 @@ export default function CreateGame() {
    bg-green-800 p-1"
           onMouseDown={async () => {
             await createGameLobby(playerCount);
+            router.push("/");
           }}
         >
           Create

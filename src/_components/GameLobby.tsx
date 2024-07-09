@@ -39,7 +39,7 @@ export default function GameLobby({
       </div>
       {mine && (
         <div
-          className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-green-500 p-1"
+          className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-red-500 p-1"
           onMouseDown={() => LeaveGame(game.id)}
         >
           Abort

@@ -5,6 +5,7 @@ import { db } from "~/server/db";
 import { gameLobby } from "./schema";
 import { eq, and } from "drizzle-orm";
 import { flavors } from "~/util/constants";
+import { revalidatePath } from "next/cache";
 
 export async function createGameLobby(playerCount: number) {
   const user = await currentUser();
@@ -17,6 +18,7 @@ export async function createGameLobby(playerCount: number) {
     creatorFlavor: "Charm",
     playerCount,
   });
+  revalidatePath("/");
 }
 
 export async function getGameLobbies() {
@@ -156,10 +158,12 @@ export async function JoinGame(gameId: number) {
         Err.message = "No space found due to invalid index";
         return false;
     }
+    // TODO if game is now full, start the game
     return true;
   });
 
   if (!txResult) throw Err;
+  revalidatePath("/");
   return txResult;
 }
 
@@ -261,11 +265,11 @@ export async function LeaveGame(gameId: number) {
           Err.message = "No space found due to invalid index";
           return false;
       }
-      // TODO if game is now full, start the game
 
       return true;
     });
   
     if (!txResult) throw Err;
+    revalidatePath("/");
     return txResult;
   }
