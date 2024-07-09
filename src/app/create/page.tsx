@@ -1,6 +1,6 @@
 "use server";
 
-import CreateGame from "~/_components/CreateGameLobby";
+import CreateGame from "~/app/create/_components/CreateGameLobby";
 
 export default async function CreateGameLobby() {
   

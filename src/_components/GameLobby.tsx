@@ -4,21 +4,8 @@ import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { z } from "zod";
 import { JoinGame, LeaveGame } from "~/server/db/actions";
-import { maxPlayers, minPlayers } from "~/util/constants";
-const gameSchema = z.object({
-  id: z.number(),
-  playerCount: z.number().gte(minPlayers).lte(maxPlayers),
-  creator: z.string(),
-  players: z
-    .array(
-      z.object({
-        playerName: z.string(),
-        playerFlavor: z.string(),
-      }),
-    )
-    .min(1)
-    .max(5), //TODO consider making an "or" schema around each player count to make this max always match the game settings
-});
+import { gameSchema } from "~/_util/validation";
+
 
 export default function GameLobby({
   gameLobby,

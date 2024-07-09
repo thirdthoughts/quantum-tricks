@@ -8,12 +8,11 @@ import {
   json,
   pgTableCreator,
   serial,
-  text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
 import { z } from "zod";
-import { flavors } from "~/util/constants";
+import { flavors } from "~/_util/constants";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same

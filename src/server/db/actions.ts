@@ -4,8 +4,9 @@ import { currentUser } from "@clerk/nextjs/server";
 import { db } from "~/server/db";
 import { gameLobby } from "./schema";
 import { eq, and } from "drizzle-orm";
-import { flavors } from "~/util/constants";
+import { flavors } from "~/_util/constants";
 import { revalidatePath } from "next/cache";
+import { validPlayer } from "~/_util/validation";
 
 export async function createGameLobby(playerCount: number) {
   const user = await currentUser();
@@ -26,71 +27,106 @@ export async function getGameLobbies() {
     where: eq(gameLobby.started, false),
     orderBy: gameLobby.id,
   });
+  const user = await currentUser();
 
   return games.map((g) => {
-    const gameLobby = {
+    const playerIds = [
+      g.creatorId,
+      g.player2Id,
+      g.player3Id,
+      g.player4Id,
+      g.player5Id,
+    ].filter((id) => id);
+
+    const players = [
+      {
+        playerName: g.creator,
+        playerFlavor: g.creatorFlavor,
+        me: g.creatorId === user?.id,
+      },
+      {
+        playerName: g.player2,
+        playerFlavor: g.player2Flavor,
+        me: g.player2Id === user?.id,
+      },
+      {
+        playerName: g.player3,
+        playerFlavor: g.player3Flavor,        
+        me: g.player3Id === user?.id,
+      },
+      {
+        playerName: g.player4,
+        playerFlavor: g.player4Flavor,        
+        me: g.player4Id === user?.id,
+      },
+      {
+        playerName: g.player5,
+        playerFlavor: g.player5Flavor,
+        me: g.player5Id === user?.id,
+      },
+    ].filter(validPlayer);
+
+    const lobby = {
       id: g.id,
       playerCount: g.playerCount,
       creator: g.creator,
-      players: [{ playerName: g.creator, playerFlavor: g.creatorFlavor }],
+      players: players,
+      mine: !!user?.id && playerIds.includes(user.id),
     };
-    if (g.player2 && g.player2Flavor)
-      gameLobby.players.push({
-        playerName: g.player2,
-        playerFlavor: g.player2Flavor,
-      });
-    if (g.player3 && g.player3Flavor)
-      gameLobby.players.push({
-        playerName: g.player3,
-        playerFlavor: g.player3Flavor,
-      });
-    if (g.player4 && g.player4Flavor)
-      gameLobby.players.push({
-        playerName: g.player4,
-        playerFlavor: g.player4Flavor,
-      });
-    if (g.player5 && g.player5Flavor)
-      gameLobby.players.push({
-        playerName: g.player5,
-        playerFlavor: g.player5Flavor,
-      });
-    return gameLobby;
+    return lobby;
   });
 }
 
 export async function getGameLobby(id: number) {
-  const gl = await db.query.gameLobby.findFirst({
+  const g = await db.query.gameLobby.findFirst({
     where: and(eq(gameLobby.started, false), eq(gameLobby.id, id)),
   });
+  const user = await currentUser();
+  if (!g) throw new Error("game lobby not found");
 
-  if (!gl) throw new Error("game lobby not found");
+  const playerIds = [
+    g.creatorId,
+    g.player2Id,
+    g.player3Id,
+    g.player4Id,
+    g.player5Id,
+  ].filter((id) => id);
+
+  const players = [
+    {
+      playerName: g.creator,
+      playerFlavor: g.creatorFlavor,
+      me: g.creatorId === user?.id,
+    },
+    {
+      playerName: g.player2,
+      playerFlavor: g.player2Flavor,
+      me: g.player2Id === user?.id,
+    },
+    {
+      playerName: g.player3,
+      playerFlavor: g.player3Flavor,        
+      me: g.player3Id === user?.id,
+    },
+    {
+      playerName: g.player4,
+      playerFlavor: g.player4Flavor,        
+      me: g.player4Id === user?.id,
+    },
+    {
+      playerName: g.player5,
+      playerFlavor: g.player5Flavor,
+      me: g.player5Id === user?.id,
+    },
+  ].filter(validPlayer);
 
   const lobby = {
-    id: gl.id,
-    playerCount: gl.playerCount,
-    creator: gl.creator,
-    players: [{ playerName: gl.creator, playerFlavor: gl.creatorFlavor }],
+    id: g.id,
+    playerCount: g.playerCount,
+    creator: g.creator,
+    players: players,
+    mine: !!user?.id && playerIds.includes(user.id),
   };
-  if (gl.player2 && gl.player2Flavor)
-    lobby.players.push({
-      playerName: gl.player2,
-      playerFlavor: gl.player2Flavor,
-    });
-  if (gl.player3 && gl.player3Flavor)
-    lobby.players.push({
-      playerName: gl.player3,
-      playerFlavor: gl.player3Flavor,
-    });
-  if (gl.player4 && gl.player4Flavor)
-    lobby.players.push({
-      playerName: gl.player4,
-      playerFlavor: gl.player4Flavor,
-    });
-  if (gl.player5 && gl.player5Flavor)
-    lobby.players.push({
-      playerName: gl.player5,
-      playerFlavor: gl.player5Flavor,
-    });
   return lobby;
 }
 
