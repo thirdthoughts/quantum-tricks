@@ -1,6 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 import { z } from "zod";
 import { JoinGame, LeaveGame } from "~/server/db/actions";
 import { maxPlayers, minPlayers } from "~/util/constants";
@@ -20,27 +21,33 @@ const gameSchema = z.object({
 });
 
 export default function GameLobby({
-  game,
+  gameLobby,
 }: {
-  game: z.infer<typeof gameSchema>;
+  gameLobby: z.infer<typeof gameSchema>;
 }) {
   const { user, isLoaded } = useUser();
-  const mine = game.creator === user?.fullName;
-  const alreadyIn = game.players.some((p) => p.playerName === user?.fullName);
+  const mine = gameLobby.creator === user?.fullName;
+  const alreadyIn = gameLobby.players.some((p) => p.playerName === user?.fullName);
 
   if (!isLoaded) return null;
 
   return (
     <div className="flex flex-row gap-1">
-      <div className="flex w-1/12 bg-blue-700 p-1">{game.playerCount}</div>
-      <div className="flex w-1/2 bg-blue-700 p-1">{game.creator}</div>
+      <div className="flex w-1/12 bg-blue-700 p-1">{gameLobby.playerCount}</div>
+      <div className="flex w-1/2 bg-blue-700 p-1">{gameLobby.creator}</div>
       <div className="flex w-1/4 bg-blue-700 p-1">
-        {game.playerCount - game.players.length}
+        {gameLobby.playerCount - gameLobby.players.length}
       </div>
+      <Link
+          className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-orange-500 p-1"
+          href={`/viewLobby/${gameLobby.id}`}
+        >
+          View
+        </Link>
       {mine && (
         <div
           className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-red-500 p-1"
-          onMouseDown={() => LeaveGame(game.id)}
+          onMouseDown={() => LeaveGame(gameLobby.id)}
         >
           Abort
         </div>
@@ -48,7 +55,7 @@ export default function GameLobby({
       {!alreadyIn && (
         <div
           className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-green-500 p-1"
-          onMouseDown={() => JoinGame(game.id)}
+          onMouseDown={() => JoinGame(gameLobby.id)}
         >
           Join
         </div>
@@ -56,7 +63,7 @@ export default function GameLobby({
       {alreadyIn && !mine && (
         <div
           className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-red-500 p-1"
-          onMouseDown={() => LeaveGame(game.id)}
+          onMouseDown={() => LeaveGame(gameLobby.id)}
         >
           Leave
         </div>

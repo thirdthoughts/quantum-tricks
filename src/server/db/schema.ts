@@ -5,11 +5,15 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   integer,
+  json,
   pgTableCreator,
   serial,
+  text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { z } from "zod";
+import { flavors } from "~/util/constants";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -47,4 +51,24 @@ export const gameLobby = createTable(
     player5Flavor: varchar("player5Flavor", {length:12}),
     started: boolean("started").default(false),
   },
+);
+
+const gamePlayerSchema = z.object({
+  playerName: z.string(),
+  playerId: z.string(),
+  playerFlavor: z.enum(flavors)
+})
+
+export const game = createTable(
+  "game",
+  {
+    d: serial("id").primaryKey(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
+      () => new Date()
+    ),
+    players: json('players').$type<z.infer<typeof gamePlayerSchema>[]>(), //This should be in player order and never change after creation
+  }
 );
