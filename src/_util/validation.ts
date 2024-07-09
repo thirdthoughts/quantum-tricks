@@ -20,6 +20,6 @@ export const playerSchema = z.object({
       .max(5), //TODO consider making an "or" schema around each player count to make this max always match the game settings
   });
 
-export function validPlayer<TValue>(value: z.infer<typeof playerSchema> | {playerName: string | null; playerFlavor: string | null, me:boolean | null}): value is z.infer<typeof playerSchema> {
+export function validPlayer(value: z.infer<typeof playerSchema> | {playerName: string | null; playerFlavor: string | null, me:boolean | null}): value is z.infer<typeof playerSchema> {
     return !!value.playerName && !!value.playerFlavor;
 }

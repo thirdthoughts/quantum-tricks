@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { z } from "zod";
 import { JoinGame, LeaveGame } from "~/server/db/actions";
-import { gameSchema } from "~/_util/validation";
+import { type gameSchema } from "~/_util/validation";
 
 
 export default function GameLobby({
