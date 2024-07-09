@@ -161,9 +161,9 @@ export async function JoinGame(gameId: number) {
     // TODO if game is now full, start the game
     return true;
   });
+  revalidatePath("/");
 
   if (!txResult) throw Err;
-  revalidatePath("/");
   return txResult;
 }
 
@@ -268,8 +268,8 @@ export async function LeaveGame(gameId: number) {
 
       return true;
     });
+    revalidatePath("/");
   
     if (!txResult) throw Err;
-    revalidatePath("/");
     return txResult;
   }
