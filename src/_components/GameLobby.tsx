@@ -42,7 +42,7 @@ export default function GameLobby({
             Leave(gameLobby.id);
           }}
         >
-          Abort
+          Cancel
         </div>
       )}
       {!alreadyIn && (
