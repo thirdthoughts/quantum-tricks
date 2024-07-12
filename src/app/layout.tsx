@@ -10,6 +10,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import { Toaster } from "~/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Quantum Tricks",
@@ -40,6 +41,7 @@ export default function RootLayout({
             </div>
           </SignedOut>
           <SignedIn>{children}</SignedIn>
+          <Toaster></Toaster>
         </body>
       </html>
     </ClerkProvider>

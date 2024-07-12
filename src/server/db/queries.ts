@@ -19,7 +19,9 @@ export async function createGameLobby(playerCount: number) {
     creatorFlavor: "Charm",
     playerCount,
   });
+
   revalidatePath("/");
+  return true;
 }
 
 export async function getGameLobbies() {

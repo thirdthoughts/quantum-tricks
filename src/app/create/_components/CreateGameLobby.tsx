@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { CreateLobby } from "~/server/actions";
 
 export default function CreateGame() {
@@ -78,7 +79,8 @@ export default function CreateGame() {
           className="flex flex-grow cursor-pointer select-none items-center justify-center rounded-lg border-2
    bg-green-800 p-1"
           onMouseDown={async () => {
-            await CreateLobby(playerCount);
+            const success = await CreateLobby(playerCount);
+            if(success) toast.info(`Game Created`);
             router.push("/");
           }}
         >

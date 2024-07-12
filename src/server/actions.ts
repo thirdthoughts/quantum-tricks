@@ -11,5 +11,5 @@ export async function LeaveLobby(gameNumber: number) {
 }
 
 export async function CreateLobby(playerCount: number) {
-    await createGameLobby(playerCount);
+    return await createGameLobby(playerCount);
 }
