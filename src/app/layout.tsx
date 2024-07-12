@@ -11,6 +11,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { Toaster } from "~/components/ui/sonner";
+import { CSPostHogProvider } from "./_analytics/providers";
 
 export const metadata: Metadata = {
   title: "Quantum Tricks",
@@ -24,25 +25,27 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${GeistSans.variable} dark`}>
-        <body>
-          <SignedIn>
-            <div className="float-right p-4">
-              <UserButton />
-            </div>
-          </SignedIn>
-          <div className="p-4 text-center text-4xl">
-            WELCOME TO QUANTUM TRICKS
-          </div>
-          <SignedOut>
-            <div className="flex items-center justify-center">
-              <div className="rounded-lg bg-slate-700 p-3 text-center">
-                <SignInButton />
+        <CSPostHogProvider>
+          <body>
+            <SignedIn>
+              <div className="float-right p-4">
+                <UserButton />
               </div>
+            </SignedIn>
+            <div className="p-4 text-center text-4xl">
+              WELCOME TO QUANTUM TRICKS
             </div>
-          </SignedOut>
-          <SignedIn>{children}</SignedIn>
-          <Toaster></Toaster>
-        </body>
+            <SignedOut>
+              <div className="flex items-center justify-center">
+                <div className="rounded-lg bg-slate-700 p-3 text-center">
+                  <SignInButton />
+                </div>
+              </div>
+            </SignedOut>
+            <SignedIn>{children}</SignedIn>
+            <Toaster></Toaster>
+          </body>
+        </CSPostHogProvider>
       </html>
     </ClerkProvider>
   );
