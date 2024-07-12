@@ -16,6 +16,6 @@
     [ ] round play
     [ ] round cleanup
     [ ] game cleanup
-[ ] analytics ? (posthog)
-[ ] rate limiting (upstash)
+[x] analytics (posthog)
+[x] rate limiting (upstash)
 [ ] favicon
