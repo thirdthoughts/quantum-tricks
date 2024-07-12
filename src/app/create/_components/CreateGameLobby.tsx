@@ -13,7 +13,7 @@ export default function CreateGame() {
       <div>New Game</div>
       <div className="h-4"></div>
       <div className="flex items-center">
-        <ul className="flex items-center gap-1">
+        <ul className="flex items-center gap-2">
           <li>
             <input
               className="peer sr-only"
@@ -25,9 +25,8 @@ export default function CreateGame() {
               onChange={() => setPlayerCount(3)}
             />
             <label
-              className="flex cursor-pointer rounded-lg p-5 hover:bg-slate-800
-                 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500 peer-checked:ring-2
-                 peer-checked:ring-green-500"
+              className="flex cursor-pointer rounded-lg p-5 bg-slate-600 hover:bg-slate-600/90
+                 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500 ring-2"
               htmlFor="answer_3"
             >
               3 Players
@@ -44,9 +43,9 @@ export default function CreateGame() {
               onChange={() => setPlayerCount(4)}
             />
             <label
-              className="flex cursor-pointer rounded-lg p-5 hover:bg-slate-800
-                 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500 peer-checked:ring-2
-                 peer-checked:ring-green-500"
+              className="flex cursor-pointer rounded-lg p-5 bg-slate-600 hover:bg-slate-600/90
+                 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500 ring-2
+                 "
               htmlFor="answer_4"
             >
               4 Players
@@ -63,9 +62,8 @@ export default function CreateGame() {
               onChange={() => setPlayerCount(5)}
             />
             <label
-              className="flex cursor-pointer rounded-lg p-5 hover:bg-slate-800
-                 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500 peer-checked:ring-2
-                 peer-checked:ring-green-500"
+              className="flex cursor-pointer rounded-lg p-5 bg-slate-600 hover:bg-slate-600/90
+                 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500 ring-2"
               htmlFor="answer_5"
             >
               5 Players
