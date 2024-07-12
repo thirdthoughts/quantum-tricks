@@ -2,6 +2,7 @@
 
 import { getGameLobby } from "~/server/db/queries";
 import LobbyPlayerView from "../_components/LobbyPlayerView";
+import LobbyEmptyPlayerView from "../_components/LobbyEmptyPlayerView";
 
 // export async function generateStaticParams() {
 //   const gameLobbies = await getGameLobbies();
@@ -24,6 +25,9 @@ export default async function ViewLobby({
         <div className="flex w-1/3 rounded-tr-lg bg-slate-500 p-1">Flavor</div>
       </div>
       {gameLobby.players.map((p) => <LobbyPlayerView player={p} key={`${p.playerFlavor}_player`}></LobbyPlayerView>)}
+      {Array.from({length: gameLobby.playerCount - gameLobby.players.length}).map((it, index) => {
+        return <LobbyEmptyPlayerView key={`emptySlot${index}`}></LobbyEmptyPlayerView>
+      })}
     </div>
     //TODO show players, flavors, and empty seats
     //TODO if player already in game, allow changing flavor
