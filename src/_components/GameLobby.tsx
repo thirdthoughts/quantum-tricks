@@ -9,7 +9,7 @@ import { Button } from "~/components/ui/button";
 export default function GameLobby({
   gameLobby,
   Join,
-  Leave
+  Leave,
 }: {
   gameLobby: z.infer<typeof gameSchema>;
   Join: (gameId: number) => void;
@@ -27,46 +27,52 @@ export default function GameLobby({
     <div className="flex flex-row gap-1">
       <div className="flex w-1/12 bg-blue-700 p-1">{gameLobby.playerCount}</div>
       <div className="flex w-1/2 bg-blue-700 p-1">{gameLobby.creator}</div>
-      <div className="flex w-1/4 bg-blue-700 p-1">
+      <div className="flex w-1/6 bg-blue-700 p-1">
         {gameLobby.playerCount - gameLobby.players.length}
       </div>
-      <Link
-        className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-orange-500 p-1 hover:bg-orange-500/80"
-        href={`/viewLobby/${gameLobby.id}`}
-      >
-        View
-      </Link>
-      {mine && (
-        <Button variant={"destructive"}
-          className="flex w-1/6"
-          onMouseDown={() => {
-            Leave(gameLobby.id);
-          }}
+      <div className="flex w-1/6">
+        <Link
+          className="cursor-pointer justify-center rounded-lg bg-orange-500 p-1 hover:bg-orange-500/80 w-full"
+          href={`/viewLobby/${gameLobby.id}`}
         >
-          Cancel
-        </Button>
-      )}
-      {!alreadyIn && (
-        <Button
-          className="flex w-1/6"
-          variant={"do"}
-          onMouseDown={() => {
-            Join(gameLobby.id);
-          }}
-        >
-          Join
-        </Button>
-      )}
-      {alreadyIn && !mine && (
-        <Button variant={"destructive"}
-          className="flex w-1/6"
-          onMouseDown={() => {
-            Leave(gameLobby.id);
-          }}
-        >
-          Leave
-        </Button>
-      )}
+          View
+        </Link>
+      </div>
+      <div className="flex w-1/6">
+        {mine && (
+          <Button
+            variant={"destructive"}
+            className="w-full"
+            onMouseDown={() => {
+              Leave(gameLobby.id);
+            }}
+          >
+            Cancel
+          </Button>
+        )}
+        {!alreadyIn && (
+          <Button
+            variant={"do"}
+            className=" w-full"
+            onMouseDown={() => {
+              Join(gameLobby.id);
+            }}
+          >
+            Join
+          </Button>
+        )}
+        {alreadyIn && !mine && (
+          <Button
+            variant={"destructive"}
+            className=" w-full"
+            onMouseDown={() => {
+              Leave(gameLobby.id);
+            }}
+          >
+            Leave
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

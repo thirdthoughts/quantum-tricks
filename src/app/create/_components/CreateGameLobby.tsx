@@ -3,13 +3,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Button } from "~/components/ui/button";
 import { CreateLobby } from "~/server/actions";
 
 export default function CreateGame() {
   const [playerCount, setPlayerCount] = useState(4);
-  const router = useRouter()
+  const router = useRouter();
   return (
-    <div className="justify-center gap-1 text-center items-center m-auto">
+    <div className="m-auto items-center justify-center gap-1 text-center">
       <div>New Game</div>
       <div className="h-4"></div>
       <div className="flex items-center">
@@ -25,8 +26,8 @@ export default function CreateGame() {
               onChange={() => setPlayerCount(3)}
             />
             <label
-              className="flex cursor-pointer rounded-lg p-5 bg-slate-600 hover:bg-slate-600/90
-                 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500 ring-2"
+              className="flex cursor-pointer rounded-lg bg-slate-600 p-5 ring-2
+                 hover:bg-slate-600/90 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500"
               htmlFor="answer_3"
             >
               3 Players
@@ -43,8 +44,8 @@ export default function CreateGame() {
               onChange={() => setPlayerCount(4)}
             />
             <label
-              className="flex cursor-pointer rounded-lg p-5 bg-slate-600 hover:bg-slate-600/90
-                 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500 ring-2
+              className="flex cursor-pointer rounded-lg bg-slate-600 p-5 ring-2
+                 hover:bg-slate-600/90 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500
                  "
               htmlFor="answer_4"
             >
@@ -62,8 +63,8 @@ export default function CreateGame() {
               onChange={() => setPlayerCount(5)}
             />
             <label
-              className="flex cursor-pointer rounded-lg p-5 bg-slate-600 hover:bg-slate-600/90
-                 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500 ring-2"
+              className="flex cursor-pointer rounded-lg bg-slate-600 p-5 ring-2
+                 hover:bg-slate-600/90 focus:outline-none peer-checked:border-transparent peer-checked:bg-green-500"
               htmlFor="answer_5"
             >
               5 Players
@@ -73,20 +74,21 @@ export default function CreateGame() {
       </div>
       <div className="h-4"></div>
       <div className="flex gap-1">
-        <button
-          className="flex flex-grow cursor-pointer select-none items-center justify-center rounded-lg border-2
-   bg-green-800 p-1"
+        <Button
+          variant={"do"}
+          className="flex flex-grow p-1"
           onMouseDown={async () => {
+            //TODO change this to a form/action type submit etc
             const success = await CreateLobby(playerCount);
-            if(success) toast.info(`Game Created`);
+            if (success) toast.info(`Game Created`);
             router.push("/");
           }}
         >
           Create
-        </button>
+        </Button>
         <Link
           className="float-right flex flex-grow cursor-pointer select-none items-center justify-center rounded-lg
-   border-2 bg-red-800 p-1"
+   border-2 bg-red-800 hover: bg-red-800/80 p-1"
           href="/"
         >
           Cancel
