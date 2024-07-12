@@ -31,7 +31,7 @@ export default function GameLobby({
         {gameLobby.playerCount - gameLobby.players.length}
       </div>
       <Link
-        className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-orange-500 p-1 hover:bg-orange-500/90"
+        className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-orange-500 p-1 hover:bg-orange-500/80"
         href={`/viewLobby/${gameLobby.id}`}
       >
         View
@@ -49,6 +49,7 @@ export default function GameLobby({
       {!alreadyIn && (
         <Button
           className="flex w-1/6"
+          variant={"do"}
           onMouseDown={() => {
             Join(gameLobby.id);
           }}
