@@ -61,7 +61,7 @@ const gamePlayerSchema = z.object({
 export const game = createTable(
   "game",
   {
-    d: serial("id").primaryKey(),
+    id: serial("id").primaryKey(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

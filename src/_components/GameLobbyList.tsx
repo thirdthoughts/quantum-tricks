@@ -1,6 +1,6 @@
 "use server";
 
-import { getGameLobbies } from "~/server/db/actions";
+import { getGameLobbies } from "~/server/db/queries";
 import GameLobby from "./GameLobby";
 
 export async function GameLobbyList() {

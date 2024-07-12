@@ -3,9 +3,8 @@
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { z } from "zod";
-import { JoinGame, LeaveGame } from "~/server/db/actions";
 import { type gameSchema } from "~/_util/validation";
-
+import { JoinLobby, LeaveLobby } from "~/server/actions";
 
 export default function GameLobby({
   gameLobby,
@@ -14,7 +13,9 @@ export default function GameLobby({
 }) {
   const { user, isLoaded } = useUser();
   const mine = gameLobby.creator === user?.fullName;
-  const alreadyIn = gameLobby.players.some((p) => p.playerName === user?.fullName);
+  const alreadyIn = gameLobby.players.some(
+    (p) => p.playerName === user?.fullName,
+  );
 
   if (!isLoaded) return null;
 
@@ -26,15 +27,17 @@ export default function GameLobby({
         {gameLobby.playerCount - gameLobby.players.length}
       </div>
       <Link
-          className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-orange-500 p-1"
-          href={`/viewLobby/${gameLobby.id}`}
-        >
-          View
-        </Link>
+        className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-orange-500 p-1"
+        href={`/viewLobby/${gameLobby.id}`}
+      >
+        View
+      </Link>
       {mine && (
         <div
           className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-red-500 p-1"
-          onMouseDown={() => LeaveGame(gameLobby.id)}
+          onMouseDown={() => {
+            LeaveLobby(gameLobby.id);
+          }}
         >
           Abort
         </div>
@@ -42,7 +45,9 @@ export default function GameLobby({
       {!alreadyIn && (
         <div
           className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-green-500 p-1"
-          onMouseDown={() => JoinGame(gameLobby.id)}
+          onMouseDown={() => {
+            JoinLobby(gameLobby.id);
+          }}
         >
           Join
         </div>
@@ -50,7 +55,9 @@ export default function GameLobby({
       {alreadyIn && !mine && (
         <div
           className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-red-500 p-1"
-          onMouseDown={() => LeaveGame(gameLobby.id)}
+          onMouseDown={() => {
+            LeaveLobby(gameLobby.id);
+          }}
         >
           Leave
         </div>

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { createGameLobby } from "~/server/db/actions";
+import { CreateLobby } from "~/server/actions";
 
 export default function CreateGame() {
   const [playerCount, setPlayerCount] = useState(4);
@@ -78,7 +78,7 @@ export default function CreateGame() {
           className="flex flex-grow cursor-pointer select-none items-center justify-center rounded-lg border-2
    bg-green-800 p-1"
           onMouseDown={async () => {
-            await createGameLobby(playerCount);
+            await CreateLobby(playerCount);
             router.push("/");
           }}
         >

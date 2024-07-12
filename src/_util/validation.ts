@@ -4,10 +4,10 @@ import { maxPlayers, minPlayers } from "./constants";
 export const playerSchema = z.object({
     playerName: z.string(),
     playerFlavor: z.string(),
-    me: z.boolean(),
+    me: z.boolean().optional(),
   });
   
-  export const gameSchema = z.object({
+export const gameSchema = z.object({
     id: z.number(),
     playerCount: z.number().gte(minPlayers).lte(maxPlayers),
     creator: z.string(),
@@ -20,6 +20,6 @@ export const playerSchema = z.object({
       .max(5), //TODO consider making an "or" schema around each player count to make this max always match the game settings
   });
 
-export function validPlayer(value: z.infer<typeof playerSchema> | {playerName: string | null; playerFlavor: string | null, me:boolean | null}): value is z.infer<typeof playerSchema> {
-    return !!value.playerName && !!value.playerFlavor;
+export function validPlayer(p: any): p is {playerName: string, playerFlavor: string, me?: boolean} {
+    return playerSchema.safeParse(p).success;
 }

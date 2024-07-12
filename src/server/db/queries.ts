@@ -1,8 +1,8 @@
-"use server";
+"use server"
 
 import { currentUser } from "@clerk/nextjs/server";
 import { db } from "~/server/db";
-import { gameLobby } from "./schema";
+import { game, gameLobby } from "./schema";
 import { eq, and } from "drizzle-orm";
 import { flavors } from "~/_util/constants";
 import { revalidatePath } from "next/cache";
@@ -64,7 +64,7 @@ export async function getGameLobbies() {
         playerFlavor: g.player5Flavor,
         me: g.player5Id === user?.id,
       },
-    ].filter(validPlayer);
+    ].filter(p => validPlayer(p));
 
     const lobby = {
       id: g.id,
@@ -118,7 +118,7 @@ export async function getGameLobby(id: number) {
       playerFlavor: g.player5Flavor,
       me: g.player5Id === user?.id,
     },
-  ].filter(validPlayer);
+  ].filter(p => validPlayer(p));
 
   const lobby = {
     id: g.id,
@@ -163,6 +163,33 @@ export async function JoinGame(lobbyId: number) {
           g.player4Flavor,
           g.player5Flavor,
         ],
+        
+        players: [{
+          playerName: g.creator,
+          playerFlavor: g.creatorFlavor,
+          me: g.creatorId === user?.id,
+        },
+        {
+          playerName: g.player2,
+          playerFlavor: g.player2Flavor,
+          me: g.player2Id === user?.id,
+        },
+        {
+          playerName: g.player3,
+          playerFlavor: g.player3Flavor,        
+          me: g.player3Id === user?.id,
+        },
+        {
+          playerName: g.player4,
+          playerFlavor: g.player4Flavor,        
+          me: g.player4Id === user?.id,
+        },
+        {
+          playerName: g.player5,
+          playerFlavor: g.player5Flavor,
+          me: g.player5Id === user?.id,
+        },
+      ].filter(validPlayer),
       };
     })[0];
 
@@ -235,6 +262,9 @@ export async function JoinGame(lobbyId: number) {
         return false;
     }
     // TODO if game is now full, start the game
+    if(numPlayers + 1 == lobby.playerCount) {
+      
+    }
     return true;
   });
   revalidatePath("/");
