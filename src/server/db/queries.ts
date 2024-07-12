@@ -1,4 +1,4 @@
-import "server-only"
+import "server-only";
 
 import { currentUser } from "@clerk/nextjs/server";
 import { db } from "~/server/db";
@@ -7,11 +7,29 @@ import { eq, and } from "drizzle-orm";
 import { flavors } from "~/_util/constants";
 import { revalidatePath } from "next/cache";
 import { validPlayer } from "~/_util/validation";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+// Create a new ratelimiter, that allows 10 requests per 10 seconds
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, "10 s"),
+  analytics: true,
+  /**
+   * Optional prefix for the keys used in redis. This is useful if you want to share a redis
+   * instance with other applications and want to avoid key collisions. The default prefix is
+   * "@upstash/ratelimit"
+   */
+  prefix: "@upstash/ratelimit/quantum-tricks",
+});
 
 export async function createGameLobby(playerCount: number) {
   const user = await currentUser();
   if (!user?.fullName)
     throw new Error("Invalid User, please log in and try again");
+
+  const { success } = await ratelimit.limit(user.id);
+  if (!success) throw new Error("rate limit exceeded");
 
   await db.insert(gameLobby).values({
     creator: user.fullName,
@@ -30,6 +48,12 @@ export async function getGameLobbies() {
     orderBy: gameLobby.id,
   });
   const user = await currentUser();
+
+  if (!user?.fullName)
+    throw new Error("Invalid User, please log in and try again");
+
+  const { success } = await ratelimit.limit(user.id);
+  if (!success) throw new Error("rate limit exceeded");
 
   return games.map((g) => {
     const playerIds = [
@@ -53,12 +77,12 @@ export async function getGameLobbies() {
       },
       {
         playerName: g.player3,
-        playerFlavor: g.player3Flavor,        
+        playerFlavor: g.player3Flavor,
         me: g.player3Id === user?.id,
       },
       {
         playerName: g.player4,
-        playerFlavor: g.player4Flavor,        
+        playerFlavor: g.player4Flavor,
         me: g.player4Id === user?.id,
       },
       {
@@ -66,7 +90,7 @@ export async function getGameLobbies() {
         playerFlavor: g.player5Flavor,
         me: g.player5Id === user?.id,
       },
-    ].filter(p => validPlayer(p));
+    ].filter((p) => validPlayer(p));
 
     const lobby = {
       id: g.id,
@@ -84,6 +108,12 @@ export async function getGameLobby(id: number) {
     where: and(eq(gameLobby.started, false), eq(gameLobby.id, id)),
   });
   const user = await currentUser();
+  if (!user?.fullName)
+    throw new Error("Invalid User, please log in and try again");
+
+  const { success } = await ratelimit.limit(user.id);
+  if (!success) throw new Error("rate limit exceeded");
+
   if (!g) throw new Error("game lobby not found");
 
   const playerIds = [
@@ -107,12 +137,12 @@ export async function getGameLobby(id: number) {
     },
     {
       playerName: g.player3,
-      playerFlavor: g.player3Flavor,        
+      playerFlavor: g.player3Flavor,
       me: g.player3Id === user?.id,
     },
     {
       playerName: g.player4,
-      playerFlavor: g.player4Flavor,        
+      playerFlavor: g.player4Flavor,
       me: g.player4Id === user?.id,
     },
     {
@@ -120,7 +150,7 @@ export async function getGameLobby(id: number) {
       playerFlavor: g.player5Flavor,
       me: g.player5Id === user?.id,
     },
-  ].filter(p => validPlayer(p));
+  ].filter((p) => validPlayer(p));
 
   const lobby = {
     id: g.id,
@@ -136,6 +166,9 @@ export async function JoinGame(lobbyId: number) {
   const user = await currentUser();
   if (!user?.fullName)
     throw new Error("Invalid User, please log in and try again");
+
+  const { success } = await ratelimit.limit(user.id);
+  if (!success) throw new Error("rate limit exceeded");
 
   const Err = new Error();
 
@@ -165,33 +198,34 @@ export async function JoinGame(lobbyId: number) {
           g.player4Flavor,
           g.player5Flavor,
         ],
-        
-        players: [{
-          playerName: g.creator,
-          playerFlavor: g.creatorFlavor,
-          me: g.creatorId === user?.id,
-        },
-        {
-          playerName: g.player2,
-          playerFlavor: g.player2Flavor,
-          me: g.player2Id === user?.id,
-        },
-        {
-          playerName: g.player3,
-          playerFlavor: g.player3Flavor,        
-          me: g.player3Id === user?.id,
-        },
-        {
-          playerName: g.player4,
-          playerFlavor: g.player4Flavor,        
-          me: g.player4Id === user?.id,
-        },
-        {
-          playerName: g.player5,
-          playerFlavor: g.player5Flavor,
-          me: g.player5Id === user?.id,
-        },
-      ].filter(validPlayer),
+
+        players: [
+          {
+            playerName: g.creator,
+            playerFlavor: g.creatorFlavor,
+            me: g.creatorId === user?.id,
+          },
+          {
+            playerName: g.player2,
+            playerFlavor: g.player2Flavor,
+            me: g.player2Id === user?.id,
+          },
+          {
+            playerName: g.player3,
+            playerFlavor: g.player3Flavor,
+            me: g.player3Id === user?.id,
+          },
+          {
+            playerName: g.player4,
+            playerFlavor: g.player4Flavor,
+            me: g.player4Id === user?.id,
+          },
+          {
+            playerName: g.player5,
+            playerFlavor: g.player5Flavor,
+            me: g.player5Id === user?.id,
+          },
+        ].filter(validPlayer),
       };
     })[0];
 
@@ -264,8 +298,7 @@ export async function JoinGame(lobbyId: number) {
         return false;
     }
     // TODO if game is now full, start the game
-    if(numPlayers + 1 == lobby.playerCount) {
-      
+    if (numPlayers + 1 == lobby.playerCount) {
     }
     return true;
   });
@@ -280,6 +313,9 @@ export async function LeaveGame(lobbyId: number) {
   const user = await currentUser();
   if (!user?.fullName)
     throw new Error("Invalid User, please log in and try again");
+
+  const { success } = await ratelimit.limit(user.id);
+  if (!success) throw new Error("rate limit exceeded");
 
   const Err = new Error();
 
