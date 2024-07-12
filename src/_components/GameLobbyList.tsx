@@ -2,6 +2,7 @@
 
 import { getGameLobbies } from "~/server/db/queries";
 import GameLobby from "./GameLobby";
+import { JoinLobby, LeaveLobby } from "~/server/actions";
 
 export async function GameLobbyList() {
   const games = await getGameLobbies();
@@ -19,7 +20,7 @@ export async function GameLobbyList() {
         </div>
       </div>
       {games.map((g) => (
-        <GameLobby key={g.id} gameLobby={g}></GameLobby>
+        <GameLobby key={g.id} gameLobby={g} Join={JoinLobby} Leave={LeaveLobby}></GameLobby>
       ))}
     </div>
   );

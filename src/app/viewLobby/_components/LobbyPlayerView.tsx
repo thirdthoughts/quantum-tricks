@@ -1,7 +1,7 @@
 "use client";
 
-import { z } from "zod";
-import { playerSchema } from "~/_util/validation";
+import { type z } from "zod";
+import { type playerSchema } from "~/_util/validation";
 
 export default function LobbyPlayerView({
     player,

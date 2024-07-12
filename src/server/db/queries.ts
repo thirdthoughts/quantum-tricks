@@ -1,8 +1,8 @@
-"use server"
+import "server-only"
 
 import { currentUser } from "@clerk/nextjs/server";
 import { db } from "~/server/db";
-import { game, gameLobby } from "./schema";
+import { gameLobby } from "./schema";
 import { eq, and } from "drizzle-orm";
 import { flavors } from "~/_util/constants";
 import { revalidatePath } from "next/cache";

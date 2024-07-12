@@ -23,7 +23,7 @@ export default async function ViewLobby({
         <div className="flex w-1/2 bg-slate-500 p-1">Player</div>
         <div className="flex w-1/3 rounded-tr-lg bg-slate-500 p-1">Flavor</div>
       </div>
-      {gameLobby.players.map((p) => <LobbyPlayerView player={p}></LobbyPlayerView>)}
+      {gameLobby.players.map((p) => <LobbyPlayerView player={p} key={`${p.playerFlavor}_player`}></LobbyPlayerView>)}
     </div>
     //TODO show players, flavors, and empty seats
     //TODO if player already in game, allow changing flavor

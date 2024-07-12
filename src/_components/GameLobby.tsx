@@ -2,14 +2,17 @@
 
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { z } from "zod";
+import { type z } from "zod";
 import { type gameSchema } from "~/_util/validation";
-import { JoinLobby, LeaveLobby } from "~/server/actions";
 
 export default function GameLobby({
   gameLobby,
+  Join,
+  Leave
 }: {
   gameLobby: z.infer<typeof gameSchema>;
+  Join: (gameId: number) => void;
+  Leave: (gameId: number) => void;
 }) {
   const { user, isLoaded } = useUser();
   const mine = gameLobby.creator === user?.fullName;
@@ -36,7 +39,7 @@ export default function GameLobby({
         <div
           className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-red-500 p-1"
           onMouseDown={() => {
-            LeaveLobby(gameLobby.id);
+            Leave(gameLobby.id);
           }}
         >
           Abort
@@ -46,7 +49,7 @@ export default function GameLobby({
         <div
           className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-green-500 p-1"
           onMouseDown={() => {
-            JoinLobby(gameLobby.id);
+            Join(gameLobby.id);
           }}
         >
           Join
@@ -56,7 +59,7 @@ export default function GameLobby({
         <div
           className="flex w-1/6 cursor-pointer justify-center rounded-lg bg-red-500 p-1"
           onMouseDown={() => {
-            LeaveLobby(gameLobby.id);
+            Leave(gameLobby.id);
           }}
         >
           Leave
