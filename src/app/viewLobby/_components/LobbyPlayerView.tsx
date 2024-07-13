@@ -3,7 +3,6 @@
 import { type z } from "zod";
 import { type playerSchema } from "~/_util/validation";
 import { SVGFilledDot } from "~/app/_svg/filledDot";
-import { StrangeFlavorIcon } from "~/app/_svg/strange";
 
 export default function LobbyPlayerView({
     player,
