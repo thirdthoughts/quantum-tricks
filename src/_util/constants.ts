@@ -14,4 +14,3 @@ export const flavors = [
   "Bottom",
   "Top",
 ] as const;
-
