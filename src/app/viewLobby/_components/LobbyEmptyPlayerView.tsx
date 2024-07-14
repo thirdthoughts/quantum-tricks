@@ -1,11 +1,11 @@
 "use client";
 
-import BottomFlavorIcon from "~/app/_svg/bottom";
-import { CharmFlavorIcon } from "~/app/_svg/charm";
-import DownFlavorIcon from "~/app/_svg/down";
-import { StrangeFlavorIcon } from "~/app/_svg/strange";
-import { TopFlavorIcon } from "~/app/_svg/top";
-import UpFlavorIcon from "~/app/_svg/up";
+import BottomFlavorIcon from "~/_svg/bottom";
+import { CharmFlavorIcon } from "~/_svg/charm";
+import DownFlavorIcon from "~/_svg/down";
+import { StrangeFlavorIcon } from "~/_svg/strange";
+import { TopFlavorIcon } from "~/_svg/top";
+import UpFlavorIcon from "~/_svg/up";
 
 export default function LobbyEmptyPlayerView() {
   return (

@@ -2,7 +2,7 @@
 
 import { type z } from "zod";
 import { type playerSchema } from "~/_util/validation";
-import { SVGFilledDot } from "~/app/_svg/filledDot";
+import { SVGFilledDot } from "~/_svg/filledDot";
 
 export default function LobbyPlayerView({
     player,
