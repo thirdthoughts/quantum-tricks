@@ -6,6 +6,7 @@ import {
   boolean,
   integer,
   json,
+  pgEnum,
   pgTableCreator,
   serial,
   timestamp,
@@ -22,8 +23,10 @@ import { flavors } from "~/_util/constants";
  */
 export const createTable = pgTableCreator((name) => `quantum-tricks_${name}`);
 
+export const pgFlavorEnum = pgEnum('flavor', flavors);
+
 export const gameLobby = createTable(
-  "gameLobby",
+  "lobby",
   {
     id: serial("id").primaryKey(),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -43,11 +46,11 @@ export const gameLobby = createTable(
     player3: varchar("player3", {length:128}),
     player4: varchar("player4", {length:128}),
     player5: varchar("player5", {length:128}),
-    creatorFlavor: varchar("creatorFlavor", {length:12}).notNull(),
-    player2Flavor: varchar("player2Flavor", {length:12}),
-    player3Flavor: varchar("player3Flavor", {length:12}),
-    player4Flavor: varchar("player4Flavor", {length:12}),
-    player5Flavor: varchar("player5Flavor", {length:12}),
+    creatorFlavor: pgFlavorEnum("creatorFlavor").notNull(),
+    player2Flavor: pgFlavorEnum("player2Flavor"),
+    player3Flavor: pgFlavorEnum("player3Flavor"),
+    player4Flavor: pgFlavorEnum("player4Flavor"),
+    player5Flavor: pgFlavorEnum("player5Flavor"),
     started: boolean("started").default(false),
   },
 );

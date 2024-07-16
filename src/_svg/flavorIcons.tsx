@@ -35,7 +35,7 @@ export const FlavorIcon = ({
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>{iconSwitch(flavor)}</TooltipTrigger>
+        <TooltipTrigger asChild><div>{iconSwitch(flavor)}</div></TooltipTrigger>
         <TooltipContent>
           <p>{tooltip ?? `${flavor} Flavor`}</p>
         </TooltipContent>

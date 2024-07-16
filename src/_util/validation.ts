@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { maxPlayers, minPlayers } from "./constants";
+import { flavors, maxPlayers, minPlayers } from "./constants";
 
 export const playerSchema = z.object({
     playerName: z.string(),
-    playerFlavor: z.string(),
+    playerFlavor: z.enum(flavors),
     me: z.boolean().optional(),
   });
   
@@ -20,6 +20,6 @@ export const gameSchema = z.object({
       .max(5), //TODO consider making an "or" schema around each player count to make this max always match the game settings
   });
 
-export function validPlayer(p: z.infer<typeof playerSchema> | {playerName: string | null, playerFlavor: string | null, me?: boolean}): p is {playerName: string, playerFlavor: string, me?: boolean} {
+export function validPlayer(p: z.infer<typeof playerSchema> | {playerName: string | null, playerFlavor: typeof flavors[number] | null, me?: boolean}): p is z.infer<typeof playerSchema> {
     return playerSchema.safeParse(p).success;
 }
