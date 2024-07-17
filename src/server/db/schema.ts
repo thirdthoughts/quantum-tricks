@@ -35,22 +35,10 @@ export const gameLobby = createTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
       () => new Date()
     ),
-    playerCount: integer("playerCount").notNull(),
+    gameSize: integer("playerCount").notNull(),
     creatorId: varchar("creatorId", { length: 128 }).notNull(),
-    player2Id: varchar("player2Id", {length:128}),
-    player3Id: varchar("player3Id", {length:128}),
-    player4Id: varchar("player4Id", {length:128}),
-    player5Id: varchar("player5Id", {length:128}),
-    creator: varchar("creator", { length: 128 }).notNull(),
-    player2: varchar("player2", {length:128}),
-    player3: varchar("player3", {length:128}),
-    player4: varchar("player4", {length:128}),
-    player5: varchar("player5", {length:128}),
-    creatorFlavor: pgFlavorEnum("creatorFlavor").notNull(),
-    player2Flavor: pgFlavorEnum("player2Flavor"),
-    player3Flavor: pgFlavorEnum("player3Flavor"),
-    player4Flavor: pgFlavorEnum("player4Flavor"),
-    player5Flavor: pgFlavorEnum("player5Flavor"),
+    creatorName: varchar("creatorName", { length: 128 }).notNull(),
+    players: json('players').$type<z.infer<typeof gamePlayerSchema>[]>().notNull(),
     started: boolean("started").default(false),
   },
 );
@@ -71,6 +59,6 @@ export const game = createTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
       () => new Date()
     ),
-    players: json('players').$type<z.infer<typeof gamePlayerSchema>[]>(), //This should be in player order and never change after creation
+    players: json('players').$type<z.infer<typeof gamePlayerSchema>[]>().notNull(), //This should be in player order and never change after creation
   }
 );

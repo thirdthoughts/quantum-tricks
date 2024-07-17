@@ -6,7 +6,6 @@ import { gameLobby } from "./schema";
 import { eq, and } from "drizzle-orm";
 import { flavors } from "~/_util/constants";
 import { revalidatePath } from "next/cache";
-import { validPlayer } from "~/_util/validation";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
@@ -32,10 +31,16 @@ export async function createGameLobby(playerCount: number) {
   if (!success) throw new Error("rate limit exceeded");
 
   await db.insert(gameLobby).values({
-    creator: user.fullName,
     creatorId: user.id,
-    creatorFlavor: "Charm",
-    playerCount,
+    creatorName: user.username ?? user.id,
+    players: [
+      {
+        playerFlavor: "Charm",
+        playerId: user.id,
+        playerName: user.username ?? user.id,
+      },
+    ],
+    gameSize: playerCount,
   });
 
   revalidatePath("/");
@@ -56,48 +61,23 @@ export async function getGameLobbies() {
   if (!success) throw new Error("rate limit exceeded");
 
   return games.map((g) => {
-    const playerIds = [
-      g.creatorId,
-      g.player2Id,
-      g.player3Id,
-      g.player4Id,
-      g.player5Id,
-    ].filter((id) => id);
+    let mine = false;
 
-    const players = [
-      {
-        playerName: g.creator,
-        playerFlavor: g.creatorFlavor,
-        me: g.creatorId === user?.id,
-      },
-      {
-        playerName: g.player2,
-        playerFlavor: g.player2Flavor,
-        me: g.player2Id === user?.id,
-      },
-      {
-        playerName: g.player3,
-        playerFlavor: g.player3Flavor,
-        me: g.player3Id === user?.id,
-      },
-      {
-        playerName: g.player4,
-        playerFlavor: g.player4Flavor,
-        me: g.player4Id === user?.id,
-      },
-      {
-        playerName: g.player5,
-        playerFlavor: g.player5Flavor,
-        me: g.player5Id === user?.id,
-      },
-    ].filter((p) => validPlayer(p));
+    const players = g.players.map((e) => {
+      mine = mine || e.playerId === user.id;
+      return {
+        playerName: e.playerName,
+        playerFlavor: e.playerFlavor,
+        me: e.playerId === user.id,
+      };
+    });
 
     const lobby = {
       id: g.id,
-      playerCount: g.playerCount,
-      creator: g.creator,
+      playerCount: g.gameSize,
+      creator: g.creatorName,
       players: players,
-      mine: !!user?.id && playerIds.includes(user.id),
+      mine,
     };
     return lobby;
   });
@@ -116,48 +96,23 @@ export async function getGameLobby(id: number) {
 
   if (!g) throw new Error("game lobby not found");
 
-  const playerIds = [
-    g.creatorId,
-    g.player2Id,
-    g.player3Id,
-    g.player4Id,
-    g.player5Id,
-  ].filter((id) => id);
+  let mine = false;
 
-  const players = [
-    {
-      playerName: g.creator,
-      playerFlavor: g.creatorFlavor,
-      me: g.creatorId === user?.id,
-    },
-    {
-      playerName: g.player2,
-      playerFlavor: g.player2Flavor,
-      me: g.player2Id === user?.id,
-    },
-    {
-      playerName: g.player3,
-      playerFlavor: g.player3Flavor,
-      me: g.player3Id === user?.id,
-    },
-    {
-      playerName: g.player4,
-      playerFlavor: g.player4Flavor,
-      me: g.player4Id === user?.id,
-    },
-    {
-      playerName: g.player5,
-      playerFlavor: g.player5Flavor,
-      me: g.player5Id === user?.id,
-    },
-  ].filter((p) => validPlayer(p));
+  const players = g.players.map((e) => {
+    mine = mine || e.playerId === user.id;
+    return {
+      playerName: e.playerName,
+      playerFlavor: e.playerFlavor,
+      me: e.playerId === user.id,
+    };
+  });
 
   const lobby = {
     id: g.id,
-    playerCount: g.playerCount,
-    creator: g.creator,
+    playerCount: g.gameSize,
+    creator: g.creatorName,
     players: players,
-    mine: !!user?.id && playerIds.includes(user.id),
+    mine,
   };
   return lobby;
 }
@@ -182,50 +137,8 @@ export async function JoinGame(lobbyId: number) {
     const lobby = lobbies.map((g) => {
       return {
         id: g.id,
-        playerCount: g.playerCount,
-        creator: g.creator,
-        playerIds: [
-          g.creatorId,
-          g.player2Id,
-          g.player3Id,
-          g.player4Id,
-          g.player5Id,
-        ],
-        flavors: [
-          g.creatorFlavor,
-          g.player2Flavor,
-          g.player3Flavor,
-          g.player4Flavor,
-          g.player5Flavor,
-        ],
-
-        players: [
-          {
-            playerName: g.creator,
-            playerFlavor: g.creatorFlavor,
-            me: g.creatorId === user?.id,
-          },
-          {
-            playerName: g.player2,
-            playerFlavor: g.player2Flavor,
-            me: g.player2Id === user?.id,
-          },
-          {
-            playerName: g.player3,
-            playerFlavor: g.player3Flavor,
-            me: g.player3Id === user?.id,
-          },
-          {
-            playerName: g.player4,
-            playerFlavor: g.player4Flavor,
-            me: g.player4Id === user?.id,
-          },
-          {
-            playerName: g.player5,
-            playerFlavor: g.player5Flavor,
-            me: g.player5Id === user?.id,
-          },
-        ].filter(validPlayer),
+        playerCount: g.gameSize,
+        players: g.players,
       };
     })[0];
 
@@ -236,67 +149,35 @@ export async function JoinGame(lobbyId: number) {
     }
 
     // if the player is already in the game, abort
-    if (lobby.playerIds.some((p) => p === user.id)) {
+    if (lobby.players.some((p) => p.playerId === user.id)) {
       tx.rollback();
       Err.message = `Error joining game, you are already in this game`;
       return false;
     }
     // if a player tries to join a game past its playercount, abort
-    const numPlayers = lobby.playerIds.filter((n) => n).length || 0;
+    const numPlayers = lobby.players.length;
     if (numPlayers >= lobby.playerCount) {
       tx.rollback();
       Err.message = `Error joining game, no space for you!`;
       return false;
     }
-    // join at the earliest empty spot!
-    const index = lobby.playerIds.findIndex((e) => !e);
-    const flavor = flavors.find((e) => !lobby.flavors.includes(e));
-    switch (index) {
-      case 1:
-        await tx
-          .update(gameLobby)
-          .set({
-            player2Id: user.id,
-            player2: user.fullName,
-            player2Flavor: flavor,
-          })
-          .where(eq(gameLobby.id, lobby.id));
-        break;
-      case 2:
-        await tx
-          .update(gameLobby)
-          .set({
-            player3Id: user.id,
-            player3: user.fullName,
-            player3Flavor: flavor,
-          })
-          .where(eq(gameLobby.id, lobby.id));
-        break;
-      case 3:
-        await tx
-          .update(gameLobby)
-          .set({
-            player4Id: user.id,
-            player4: user.fullName,
-            player4Flavor: flavor,
-          })
-          .where(eq(gameLobby.id, lobby.id));
-        break;
-      case 4:
-        await tx
-          .update(gameLobby)
-          .set({
-            player5Id: user.id,
-            player5: user.fullName,
-            player5Flavor: flavor,
-          })
-          .where(eq(gameLobby.id, lobby.id));
-        break;
-      default:
-        tx.rollback();
-        Err.message = "No space found due to invalid index";
-        return false;
-    }
+    // join with the first available flavor
+    const players = lobby.players;
+    const flavor =
+      flavors.find(
+        (e) => !lobby.players.map((p) => p.playerFlavor).includes(e),
+      ) ?? "Up";
+    players.push({
+      playerFlavor: flavor,
+      playerId: user.id,
+      playerName: user.username ?? user.id,
+    });
+
+    await tx
+      .update(gameLobby)
+      .set({ players })
+      .where(eq(gameLobby.id, lobby.id));
+
     // TODO if game is now full, start the game
     if (numPlayers + 1 == lobby.playerCount) {
     }
@@ -326,25 +207,12 @@ export async function LeaveGame(lobbyId: number) {
       .for("update")
       .where(and(eq(gameLobby.id, lobbyId), eq(gameLobby.started, false)));
 
-    const lobby = lobbies.map((gl) => {
+    const lobby = lobbies.map((g) => {
       return {
-        id: gl.id,
-        playerCount: gl.playerCount,
-        creator: gl.creator,
-        playerIds: [
-          gl.creatorId,
-          gl.player2Id,
-          gl.player3Id,
-          gl.player4Id,
-          gl.player5Id,
-        ],
-        flavors: [
-          gl.creatorFlavor,
-          gl.player2Flavor,
-          gl.player3Flavor,
-          gl.player4Flavor,
-          gl.player5Flavor,
-        ],
+        id: g.id,
+        playerCount: g.gameSize,
+        players: g.players,
+        creatorId: g.creatorId,
       };
     })[0];
 
@@ -355,63 +223,24 @@ export async function LeaveGame(lobbyId: number) {
     }
 
     // if the player is NOT already in the game, abort
-    const index = lobby.playerIds.findIndex((e) => e === user.id);
+    const index = lobby.players.findIndex((e) => e.playerId === user.id);
     if (index < 0) {
       tx.rollback();
       Err.message = `Error leaving game, you are not in this game`;
       return false;
     }
 
-    // join at the earliest empty spot!
-    switch (index) {
-      case 0:
-        //this is the case where the creator is leaving
-        await tx.delete(gameLobby).where(eq(gameLobby.id, lobby.id));
-        break;
-      case 1:
-        await tx
-          .update(gameLobby)
-          .set({
-            player2Id: null,
-            player2: null,
-            player2Flavor: null,
-          })
-          .where(eq(gameLobby.id, lobby.id));
-        break;
-      case 2:
-        await tx
-          .update(gameLobby)
-          .set({
-            player3Id: null,
-            player3: null,
-            player3Flavor: null,
-          })
-          .where(eq(gameLobby.id, lobby.id));
-        break;
-      case 3:
-        await tx
-          .update(gameLobby)
-          .set({
-            player4Id: null,
-            player4: null,
-            player4Flavor: null,
-          })
-          .where(eq(gameLobby.id, lobby.id));
-        break;
-      case 4:
-        await tx
-          .update(gameLobby)
-          .set({
-            player5Id: null,
-            player5: null,
-            player5Flavor: null,
-          })
-          .where(eq(gameLobby.id, lobby.id));
-        break;
-      default:
-        tx.rollback();
-        Err.message = "No space found due to invalid index";
-        return false;
+    // if I am the creator, abort, otherwise leave
+
+    const filteredPlayers = lobby.players.filter((p) => p.playerId !== user.id);
+
+    if (user.id === lobby.creatorId) {
+      await tx.delete(gameLobby).where(eq(gameLobby.id, lobby.id));
+    } else {
+      await tx
+        .update(gameLobby)
+        .set({ players: filteredPlayers })
+        .where(eq(gameLobby.id, lobby.id));
     }
 
     return true;
