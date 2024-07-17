@@ -9,10 +9,10 @@ import { revalidatePath } from "next/cache";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-// Create a new ratelimiter, that allows 10 requests per 10 seconds
+// Create a new ratelimiter, that allows 20 requests per 10 seconds
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(10, "10 s"),
+  limiter: Ratelimit.slidingWindow(20, "10 s"),
   analytics: true,
   /**
    * Optional prefix for the keys used in redis. This is useful if you want to share a redis
