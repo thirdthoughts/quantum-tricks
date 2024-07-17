@@ -12,6 +12,7 @@ export const gameSchema = z.object({
     playerCount: z.number().gte(minPlayers).lte(maxPlayers),
     creator: z.string(),
     mine: z.boolean(),
+    alreadyIn: z.boolean(),
     players: z
       .array(
         playerSchema

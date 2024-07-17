@@ -24,7 +24,7 @@ const ratelimit = new Ratelimit({
 
 export async function createGameLobby(playerCount: number) {
   const user = await currentUser();
-  if (!user?.fullName)
+  if (!user)
     throw new Error("Invalid User, please log in and try again");
 
   const { success } = await ratelimit.limit(user.id);
@@ -32,12 +32,12 @@ export async function createGameLobby(playerCount: number) {
 
   await db.insert(gameLobby).values({
     creatorId: user.id,
-    creatorName: user.username ?? user.id,
+    creatorName: user.username ?? user.fullName ?? user.id,
     players: [
       {
         playerFlavor: "Charm",
         playerId: user.id,
-        playerName: user.username ?? user.id,
+        playerName: user.username ?? user.fullName ?? user.id,
       },
     ],
     gameSize: playerCount,
@@ -54,17 +54,14 @@ export async function getGameLobbies() {
   });
   const user = await currentUser();
 
-  if (!user?.fullName)
+  if (!user)
     throw new Error("Invalid User, please log in and try again");
 
   const { success } = await ratelimit.limit(user.id);
   if (!success) throw new Error("rate limit exceeded");
 
   return games.map((g) => {
-    let mine = false;
-
     const players = g.players.map((e) => {
-      mine = mine || e.playerId === user.id;
       return {
         playerName: e.playerName,
         playerFlavor: e.playerFlavor,
@@ -72,12 +69,15 @@ export async function getGameLobbies() {
       };
     });
 
+    const alreadyIn = !!players.find(p => p.me);
+
     const lobby = {
       id: g.id,
       playerCount: g.gameSize,
       creator: g.creatorName,
       players: players,
-      mine,
+      mine: g.creatorId === user.id,
+      alreadyIn,
     };
     return lobby;
   });
@@ -88,7 +88,7 @@ export async function getGameLobby(id: number) {
     where: and(eq(gameLobby.started, false), eq(gameLobby.id, id)),
   });
   const user = await currentUser();
-  if (!user?.fullName)
+  if (!user)
     throw new Error("Invalid User, please log in and try again");
 
   const { success } = await ratelimit.limit(user.id);
@@ -119,7 +119,7 @@ export async function getGameLobby(id: number) {
 
 export async function JoinGame(lobbyId: number) {
   const user = await currentUser();
-  if (!user?.fullName)
+  if (!user)
     throw new Error("Invalid User, please log in and try again");
 
   const { success } = await ratelimit.limit(user.id);
@@ -170,7 +170,7 @@ export async function JoinGame(lobbyId: number) {
     players.push({
       playerFlavor: flavor,
       playerId: user.id,
-      playerName: user.username ?? user.id,
+      playerName: user.username ?? user.fullName ?? user.id,
     });
 
     await tx
@@ -192,7 +192,7 @@ export async function JoinGame(lobbyId: number) {
 
 export async function LeaveGame(lobbyId: number) {
   const user = await currentUser();
-  if (!user?.fullName)
+  if (!user)
     throw new Error("Invalid User, please log in and try again");
 
   const { success } = await ratelimit.limit(user.id);

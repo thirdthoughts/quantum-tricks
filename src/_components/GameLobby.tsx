@@ -1,6 +1,5 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { type z } from "zod";
 import { type gameSchema } from "~/_util/validation";
@@ -15,13 +14,8 @@ export default function GameLobby({
   Join: (gameId: number) => void;
   Leave: (gameId: number) => void;
 }) {
-  const { user, isLoaded } = useUser();
-  const mine = gameLobby.creator === user?.fullName;
-  const alreadyIn = gameLobby.players.some(
-    (p) => p.playerName === user?.fullName,
-  );
-
-  if (!isLoaded) return null;
+  const mine = gameLobby.mine;
+  const alreadyIn = gameLobby.alreadyIn;
 
   return (
     <div className="flex flex-row gap-1">
