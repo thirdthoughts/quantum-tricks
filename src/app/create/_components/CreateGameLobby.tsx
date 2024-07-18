@@ -77,18 +77,20 @@ export default function CreateGame() {
         <Button
           variant={"do"}
           className="flex flex-grow p-1"
-          onMouseDown={async () => {
-            //TODO change this to a form/action type submit etc
-            const success = await CreateLobby(playerCount);
-            if (success) toast.info(`Game Created`);
-            router.push("/");
+          onMouseDown={async (eventData) => {
+            if (eventData.button === 0) {
+              //TODO change this to a form/action type submit etc
+              const success = await CreateLobby(playerCount);
+              if (success) toast.info(`Game Created`);
+              router.push("/");
+            }
           }}
         >
           Create
         </Button>
         <Link
-          className="float-right flex flex-grow cursor-pointer select-none items-center justify-center rounded-lg
-   border-2 bg-red-800 hover: bg-red-800/80 p-1"
+          className="hover: float-right flex flex-grow cursor-pointer select-none items-center justify-center
+   rounded-lg border-2 bg-red-800 bg-red-800/80 p-1"
           href="/"
         >
           Cancel

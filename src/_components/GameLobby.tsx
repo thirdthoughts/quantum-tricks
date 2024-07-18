@@ -20,13 +20,13 @@ export default function GameLobby({
   return (
     <div className="flex flex-row gap-1">
       <div className="flex w-1/12 bg-blue-700 p-1">{gameLobby.playerCount}</div>
-      <div className="flex w-1/2 bg-blue-700 p-1">{gameLobby.creator}</div>
+      <div className="flex w-1/3 bg-blue-700 p-1">{gameLobby.creator}</div>
       <div className="flex w-1/6 bg-blue-700 p-1">
         {gameLobby.playerCount - gameLobby.players.length}
       </div>
       <div className="flex w-1/6">
         <Link
-          className="cursor-pointer justify-center rounded-lg bg-orange-500 p-1 hover:bg-orange-500/80 w-full"
+          className="w-full cursor-pointer justify-center rounded-lg bg-orange-500 p-1 hover:bg-orange-500/80"
           href={`/viewLobby/${gameLobby.id}`}
         >
           View
@@ -37,8 +37,8 @@ export default function GameLobby({
           <Button
             variant={"destructive"}
             className="w-full"
-            onMouseDown={() => {
-              Leave(gameLobby.id);
+            onMouseDown={(eventData) => {
+              if (eventData.button === 0) Leave(gameLobby.id);
             }}
           >
             Cancel
@@ -48,8 +48,8 @@ export default function GameLobby({
           <Button
             variant={"do"}
             className=" w-full"
-            onMouseDown={() => {
-              Join(gameLobby.id);
+            onMouseDown={(eventData) => {
+              if (eventData.button === 0) Join(gameLobby.id);
             }}
           >
             Join
@@ -59,8 +59,8 @@ export default function GameLobby({
           <Button
             variant={"destructive"}
             className=" w-full"
-            onMouseDown={() => {
-              Leave(gameLobby.id);
+            onMouseDown={(eventData) => {
+              if (eventData.button === 0) Leave(gameLobby.id);
             }}
           >
             Leave

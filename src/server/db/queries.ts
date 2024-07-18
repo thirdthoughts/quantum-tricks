@@ -96,10 +96,7 @@ export async function getGameLobby(id: number) {
 
   if (!g) throw new Error("game lobby not found");
 
-  let mine = false;
-
   const players = g.players.map((e) => {
-    mine = mine || e.playerId === user.id;
     return {
       playerName: e.playerName,
       playerFlavor: e.playerFlavor,
@@ -107,12 +104,15 @@ export async function getGameLobby(id: number) {
     };
   });
 
+  const alreadyIn = !!players.find(p => p.me);
+
   const lobby = {
     id: g.id,
     playerCount: g.gameSize,
     creator: g.creatorName,
     players: players,
-    mine,
+    mine: g.creatorId === user.id,
+    alreadyIn,
   };
   return lobby;
 }
