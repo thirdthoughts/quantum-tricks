@@ -25,7 +25,7 @@ export default function LobbyPlayerView({
         {!!player.me && <SVGFilledDot></SVGFilledDot>}
       </div>
       <div className="flex w-1/2 bg-blue-500 p-1">{player.playerName}</div>
-      <div className="flex w-1/6 items-center bg-blue-500 p-1">
+      <div className="flex w-1/3 items-center bg-blue-500 p-1">
         <FlavorIcon flavor={player.playerFlavor}></FlavorIcon>
       </div>
       <div className="flex w-1/6 bg-blue-500 p-1">
