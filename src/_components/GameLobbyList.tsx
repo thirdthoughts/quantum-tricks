@@ -22,6 +22,9 @@ export async function GameLobbyList() {
       {games.map((g) => (
         <GameLobby key={g.id} gameLobby={g} Join={JoinLobby} Leave={LeaveLobby}></GameLobby>
       ))}
+      {
+        !games?.length && <p>No lobbies available now, create your own!</p>
+      }
     </div>
   );
 }
