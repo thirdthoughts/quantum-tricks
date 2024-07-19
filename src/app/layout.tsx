@@ -16,7 +16,7 @@ import { CSPostHogProvider } from "./_analytics/provider";
 export const metadata: Metadata = {
   title: "Quantum Tricks",
   description: "A quantum trick-taking game",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "/quantum_tricks.svg" }],
 };
 
 export default function RootLayout({

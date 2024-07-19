@@ -1,8 +1,8 @@
 "use server";
 
 import { getGameLobby } from "~/server/db/queries";
-import LobbyPlayerView from "../_components/LobbyPlayerView";
-import LobbyEmptyPlayerView from "../_components/LobbyEmptyPlayerView";
+import LobbyPlayer from "../_components/LobbyPlayer";
+import LobbyJoiner from "../_components/LobbyJoiner";
 import { JoinLobby, LeaveLobby } from "~/server/actions";
 import { flavors } from "~/_util/constants";
 
@@ -23,20 +23,20 @@ export default async function ViewLobby({
         <div className="flex w-1/6 rounded-tr-lg bg-slate-500 p-1">Action</div>
       </div>
       {gameLobby.players.map((p) => (
-        <LobbyPlayerView
+        <LobbyPlayer
           player={p}
           key={`${p.playerFlavor}_player`}
           myGame={gameLobby.mine}
           Leave={LeaveLobby}
           params={params}
-        ></LobbyPlayerView>
+        ></LobbyPlayer>
       ))}
-      <LobbyEmptyPlayerView
+      <LobbyJoiner
         Join={JoinLobby}
         params={params}
         alreadyIn={gameLobby.alreadyIn}
         availableFlavors={availableFlavors}
-      ></LobbyEmptyPlayerView>
+      ></LobbyJoiner>
       {Array.from({
         length: gameLobby.playerCount - gameLobby.players.length - 1,
       }).map((it, index) => {
@@ -51,7 +51,5 @@ export default async function ViewLobby({
       })}
     </div>
     //TODO if player already in game, allow changing flavor
-    //TODO assign each flavor a color
-    //TODO if player not in game, allow player to join
   );
 }

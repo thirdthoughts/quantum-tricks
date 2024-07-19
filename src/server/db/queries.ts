@@ -24,8 +24,7 @@ const ratelimit = new Ratelimit({
 
 export async function createGameLobby(playerCount: number) {
   const user = await currentUser();
-  if (!user)
-    throw new Error("Invalid User, please log in and try again");
+  if (!user) throw new Error("Invalid User, please log in and try again");
 
   const { success } = await ratelimit.limit(user.id);
   if (!success) throw new Error("rate limit exceeded");
@@ -54,8 +53,7 @@ export async function getGameLobbies() {
   });
   const user = await currentUser();
 
-  if (!user)
-    throw new Error("Invalid User, please log in and try again");
+  if (!user) throw new Error("Invalid User, please log in and try again");
 
   const { success } = await ratelimit.limit(user.id);
   if (!success) throw new Error("rate limit exceeded");
@@ -69,7 +67,7 @@ export async function getGameLobbies() {
       };
     });
 
-    const alreadyIn = !!players.find(p => p.me);
+    const alreadyIn = !!players.find((p) => p.me);
 
     const lobby = {
       id: g.id,
@@ -88,8 +86,7 @@ export async function getGameLobby(id: number) {
     where: and(eq(gameLobby.started, false), eq(gameLobby.id, id)),
   });
   const user = await currentUser();
-  if (!user)
-    throw new Error("Invalid User, please log in and try again");
+  if (!user) throw new Error("Invalid User, please log in and try again");
 
   const { success } = await ratelimit.limit(user.id);
   if (!success) throw new Error("rate limit exceeded");
@@ -104,7 +101,7 @@ export async function getGameLobby(id: number) {
     };
   });
 
-  const alreadyIn = !!players.find(p => p.me);
+  const alreadyIn = !!players.find((p) => p.me);
 
   const lobby = {
     id: g.id,
@@ -117,10 +114,12 @@ export async function getGameLobby(id: number) {
   return lobby;
 }
 
-export async function JoinGame(lobbyId: number) {
+export async function JoinGame(
+  lobbyId: number,
+  flavor?: (typeof flavors)[number],
+) {
   const user = await currentUser();
-  if (!user)
-    throw new Error("Invalid User, please log in and try again");
+  if (!user) throw new Error("Invalid User, please log in and try again");
 
   const { success } = await ratelimit.limit(user.id);
   if (!success) throw new Error("rate limit exceeded");
@@ -154,6 +153,19 @@ export async function JoinGame(lobbyId: number) {
       Err.message = `Error joining game, you are already in this game`;
       return false;
     }
+    // join with the first available flavor if not specified
+    if (!flavor) {
+      flavor =
+        flavors.find(
+          (e) => !lobby.players.map((p) => p.playerFlavor).includes(e),
+        ) ?? "Up";
+    }
+    //if flavor already claimed, abort
+    if (lobby.players.some((p) => p.playerFlavor === flavor)) {
+      tx.rollback();
+      Err.message = `Error joining game, this flavor is already claimed`;
+      return false;
+    }
     // if a player tries to join a game past its playercount, abort
     const numPlayers = lobby.players.length;
     if (numPlayers >= lobby.playerCount) {
@@ -161,12 +173,7 @@ export async function JoinGame(lobbyId: number) {
       Err.message = `Error joining game, no space for you!`;
       return false;
     }
-    // join with the first available flavor
     const players = lobby.players;
-    const flavor =
-      flavors.find(
-        (e) => !lobby.players.map((p) => p.playerFlavor).includes(e),
-      ) ?? "Up";
     players.push({
       playerFlavor: flavor,
       playerId: user.id,
@@ -192,8 +199,7 @@ export async function JoinGame(lobbyId: number) {
 
 export async function LeaveGame(lobbyId: number) {
   const user = await currentUser();
-  if (!user)
-    throw new Error("Invalid User, please log in and try again");
+  if (!user) throw new Error("Invalid User, please log in and try again");
 
   const { success } = await ratelimit.limit(user.id);
   if (!success) throw new Error("rate limit exceeded");

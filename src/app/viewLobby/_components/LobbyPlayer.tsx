@@ -7,7 +7,7 @@ import { FlavorIcon } from "~/_svg/flavorIcons";
 import { Button } from "~/components/ui/button";
 import { useRouter } from "next/navigation";
 
-export default function LobbyPlayerView({
+export default function LobbyPlayer({
   player,
   myGame,
   Leave,
