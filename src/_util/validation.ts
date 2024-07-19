@@ -24,3 +24,10 @@ export const gameSchema = z.object({
 export function validPlayer(p: z.infer<typeof playerSchema> | {playerName: string | null, playerFlavor: typeof flavors[number] | null, me?: boolean}): p is z.infer<typeof playerSchema> {
     return playerSchema.safeParse(p).success;
 }
+
+export type ResearchBoardType = {
+  red: (typeof flavors[number] | number)[]
+  blue: (typeof flavors[number] | number)[]
+  yellow: (typeof flavors[number] | number)[]
+  green: (typeof flavors[number] | number)[]
+}

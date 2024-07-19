@@ -51,5 +51,6 @@ export default async function ViewLobby({
       })}
     </div>
     //TODO if player already in game, allow changing flavor
+    //TODO quick link back to home page/lobby list
   );
 }

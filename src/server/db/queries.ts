@@ -2,12 +2,13 @@ import "server-only";
 
 import { currentUser } from "@clerk/nextjs/server";
 import { db } from "~/server/db";
-import { gameLobby } from "./schema";
+import { game, gameLobby, type GamePlayer } from "./schema";
 import { eq, and } from "drizzle-orm";
-import { flavors } from "~/_util/constants";
+import { flavors, PlayerBoard, ResearchBoard } from "~/_util/constants";
 import { revalidatePath } from "next/cache";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { dealHands, shuffle } from "~/_util/functions";
 
 // Create a new ratelimiter, that allows 20 requests per 10 seconds
 const ratelimit = new Ratelimit({
@@ -253,6 +254,92 @@ export async function LeaveGame(lobbyId: number) {
   });
   revalidatePath("/");
   revalidatePath(`/viewLobby/${lobbyId}`);
+
+  if (!txResult) throw Err;
+  return txResult;
+}
+
+export async function StartGame(lobbyId: number) {
+  const Err = new Error();
+  const txResult = await db.transaction(async (tx) => {
+    //look up the lobby
+    const lobbies = await tx
+      .select()
+      .from(gameLobby)
+      .for("update")
+      .where(and(eq(gameLobby.id, lobbyId), eq(gameLobby.started, false)));
+
+    const lobby = lobbies[0];
+    if (!lobby) {
+      Err.message = `Error starting game, no unstarted lobby found with matching ID`;
+      tx.rollback();
+      return false;
+    }
+
+    //if it is not full or it is overfull, abort
+    if (lobby.players.length !== lobby.gameSize) {
+      Err.message = `Error starting game, expected ${lobby.gameSize} players, found ${lobby.players.length}`;
+      tx.rollback();
+      return false;
+    }
+
+    //if any player is somehow duplicated, abort
+    if (
+      [...new Set(lobby.players.map((p) => p.playerId))].length !==
+      lobby.players.length
+    ) {
+      Err.message = `Error starting game, found duplicate player id`;
+      tx.rollback();
+      return false;
+    }
+    //if any flavor is somehow duplicated, abort
+    if (
+      [...new Set(lobby.players.map((p) => p.playerFlavor))].length !==
+      lobby.players.length
+    ) {
+      Err.message = `Error starting game, found duplicate flavor`;
+      tx.rollback();
+      return false;
+    }
+
+    //now create the game
+    //assign a board to each player (appropriate side for game size)
+    //set up score board with player names and round numbers (leave blank until rounds complete)
+    //to set up for round 1, deal a hand of cards based on the game size to each player
+    const hands = dealHands(lobby.gameSize);
+    const gamePlayers: GamePlayer[] = lobby.players.map((p, i) => {
+      return {
+        playerBoard: PlayerBoard(lobby.gameSize),
+        roundScores: Array(lobby.gameSize).map(() => 0),
+        roundBids: Array(lobby.gameSize).map(() => 0),
+        currentHand: hands[i],
+        ...p,
+      };
+    });
+    //determine player order (random by default)
+    const shuffledPlayers = shuffle(gamePlayers);
+    //set up research board based on player count (including any observed markers needed)
+    const researchBoard = ResearchBoard(lobby.gameSize);
+
+    //save state as a new game
+    await tx.insert(game).values({
+      players: shuffledPlayers,
+      researchBoard: researchBoard,
+      currentPlayerIndex: 0,
+      currentRoundStartPlayerIndex: 0,
+      currentRoundLeadColor: null,
+      currentRound: 1,
+    });
+
+    await tx
+      .update(gameLobby)
+      .set({
+        started: true,
+      })
+      .where(eq(gameLobby.id, lobbyId));
+
+      return true;
+  });
 
   if (!txResult) throw Err;
   return txResult;

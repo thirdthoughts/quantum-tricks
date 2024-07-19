@@ -13,7 +13,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { z } from "zod";
-import { flavors } from "~/_util/constants";
+import { cardColors, flavors, type PlayerBoard, type ResearchBoard } from "~/_util/constants";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -24,6 +24,13 @@ import { flavors } from "~/_util/constants";
 export const createTable = pgTableCreator((name) => `quantum-tricks_${name}`);
 
 export const pgFlavorEnum = pgEnum('flavor', flavors);
+export const pgColorEnum = pgEnum('cardColor', cardColors);
+
+const lobbyPlayerSchema = z.object({
+  playerName: z.string(),
+  playerId: z.string(),
+  playerFlavor: z.enum(flavors)
+})
 
 export const gameLobby = createTable(
   "lobby",
@@ -38,16 +45,20 @@ export const gameLobby = createTable(
     gameSize: integer("playerCount").notNull(),
     creatorId: varchar("creatorId", { length: 128 }).notNull(),
     creatorName: varchar("creatorName", { length: 128 }).notNull(),
-    players: json('players').$type<z.infer<typeof gamePlayerSchema>[]>().notNull(),
+    players: json('players').$type<z.infer<typeof lobbyPlayerSchema>[]>().notNull(),
     started: boolean("started").default(false),
   },
 );
 
-const gamePlayerSchema = z.object({
-  playerName: z.string(),
-  playerId: z.string(),
-  playerFlavor: z.enum(flavors)
-})
+export type GamePlayer = {
+  playerName: string,
+  playerId: string,
+  playerFlavor: typeof flavors[number],
+  playerBoard: ReturnType<typeof PlayerBoard>,
+  roundScores: number[],
+  roundBids: number[],
+  currentHand?: number[],
+}
 
 export const game = createTable(
   "game",
@@ -59,6 +70,11 @@ export const game = createTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
       () => new Date()
     ),
-    players: json('players').$type<z.infer<typeof gamePlayerSchema>[]>().notNull(), //This should be in player order and never change after creation
+    players: json('players').$type<GamePlayer[]>().notNull(), //This should be in player order and never change after creation
+    researchBoard: json('researchBoard').$type<ReturnType<typeof ResearchBoard>>().notNull(), //current state of the research board
+    currentPlayerIndex:  integer("currentPlayerIndex").notNull().default(0),
+    currentRoundStartPlayerIndex: integer("currentRoundStartPlayerIndex").notNull(),
+    currentRoundLeadColor: pgColorEnum("currentRoundLeadColor"),
+    currentRound: integer("currentRound").notNull().default(1)
   }
 );
