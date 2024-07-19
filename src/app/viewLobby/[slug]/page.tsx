@@ -3,9 +3,10 @@
 import { getGameLobby } from "~/server/db/queries";
 import LobbyPlayer from "../_components/LobbyPlayer";
 import LobbyJoiner from "../_components/LobbyJoiner";
-import { JoinLobby, LeaveLobby } from "~/server/actions";
+import { JoinLobby, LeaveLobby, StartGame } from "~/server/actions";
 import { flavors } from "~/_util/constants";
 import Link from "next/link";
+import StartGameButton from "../_components/StartGameButton";
 
 export default async function ViewLobby({
   params,
@@ -17,13 +18,17 @@ export default async function ViewLobby({
   const availableFlavors = flavors.filter((f) => !usedFlavors.includes(f));
   return (
     <>
-      <Link
+      <div className="flex gap-2"><Link
         className="flex w-24 cursor-pointer select-none items-center justify-center rounded-lg border-2
      border-gray-800 bg-green-800 p-1"
         href="/"
       >
         Home
       </Link>
+      {
+        gameLobby.mine && gameLobby.playerCount === gameLobby.players.length && <StartGameButton lobbyId={gameLobby.id} Start={StartGame}></StartGameButton>
+      }
+      </div>
       <div className="h-4"></div>
       <div className="flex max-w-xl flex-col gap-1">
         <div className="flex flex-row gap-1">
@@ -63,6 +68,6 @@ export default async function ViewLobby({
         })}
       </div>
     </>
-    //TODO if player already in game, allow changing flavor
+    //TODO if player already in lobby, allow changing flavor
   );
 }

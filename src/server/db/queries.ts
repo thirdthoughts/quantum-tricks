@@ -259,7 +259,7 @@ export async function LeaveGame(lobbyId: number) {
   return txResult;
 }
 
-export async function StartGame(lobbyId: number) {
+export async function StartGameQuery(lobbyId: number) {
   const Err = new Error();
   const txResult = await db.transaction(async (tx) => {
     //look up the lobby

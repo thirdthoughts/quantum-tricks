@@ -1,7 +1,7 @@
 "use server"
 
 import { type flavors } from "~/_util/constants";
-import { createGameLobby, JoinGame, LeaveGame } from "./db/queries"
+import { createGameLobby, JoinGame, LeaveGame, StartGameQuery } from "./db/queries"
 
 export async function JoinLobby(gameNumber: number, flavor?: typeof flavors[number]) {
     await JoinGame(gameNumber, flavor);
@@ -13,4 +13,8 @@ export async function LeaveLobby(gameNumber: number) {
 
 export async function CreateLobby(playerCount: number) {
     return await createGameLobby(playerCount);
+}
+
+export async function StartGame(lobbyId: number) {
+    return await StartGameQuery(lobbyId)
 }
