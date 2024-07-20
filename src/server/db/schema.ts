@@ -72,10 +72,11 @@ export const game = createTable(
     ),
     players: json('players').$type<GamePlayer[]>().notNull(), //This should be in player order and never change after creation
     researchBoard: json('researchBoard').$type<ReturnType<typeof ResearchBoard>>().notNull(), //current state of the research board
-    currentPlayerIndex:  integer("currentPlayerIndex").notNull().default(0),
-    currentRoundStartPlayerIndex: integer("currentRoundStartPlayerIndex").notNull(),
-    currentRoundLeadColor: pgColorEnum("currentRoundLeadColor"),
-    currentRound: integer("currentRound").notNull().default(1),
+    currentPlayerIndex:  integer("currentPlayerIndex").notNull().default(0), //player currently acting in the trick
+    currentRoundStartPlayerIndex: integer("currentRoundStartPlayerIndex").notNull(), //player who acted first this round
+    currentRoundLeadColor: pgColorEnum("currentRoundLeadColor"), //color that was used to lead this trick
+    currentRound: integer("currentRound").notNull().default(1), //current round number
+    currentTrickLeadPlayerIndex: integer("currentTrickLeadPlayerIndex").default(0).notNull(), //index of the player to lead the current trick
     finished: boolean("finished").default(false).notNull(),
   }
 );
