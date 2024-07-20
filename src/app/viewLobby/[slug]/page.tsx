@@ -18,16 +18,21 @@ export default async function ViewLobby({
   const availableFlavors = flavors.filter((f) => !usedFlavors.includes(f));
   return (
     <>
-      <div className="flex gap-2"><Link
-        className="flex w-24 cursor-pointer select-none items-center justify-center rounded-lg border-2
+      <div className="flex gap-2">
+        <Link
+          className="flex w-24 cursor-pointer select-none items-center justify-center rounded-lg border-2
      border-gray-800 bg-green-800 p-1"
-        href="/"
-      >
-        Home
-      </Link>
-      {
-        gameLobby.mine && gameLobby.playerCount === gameLobby.players.length && <StartGameButton lobbyId={gameLobby.id} Start={StartGame}></StartGameButton>
-      }
+          href="/"
+        >
+          Home
+        </Link>
+        {gameLobby.mine &&
+          gameLobby.playerCount === gameLobby.players.length && (
+            <StartGameButton
+              lobbyId={gameLobby.id}
+              Start={StartGame}
+            ></StartGameButton>
+          )}
       </div>
       <div className="h-4"></div>
       <div className="flex max-w-xl flex-col gap-1">
@@ -48,12 +53,14 @@ export default async function ViewLobby({
             params={params}
           ></LobbyPlayer>
         ))}
-        <LobbyJoiner
-          Join={JoinLobby}
-          params={params}
-          alreadyIn={gameLobby.alreadyIn}
-          availableFlavors={availableFlavors}
-        ></LobbyJoiner>
+        {gameLobby.playerCount - gameLobby.players.length > 0 && (
+          <LobbyJoiner
+            Join={JoinLobby}
+            params={params}
+            alreadyIn={gameLobby.alreadyIn}
+            availableFlavors={availableFlavors}
+          ></LobbyJoiner>
+        )}
         {Array.from({
           length: gameLobby.playerCount - gameLobby.players.length - 1,
         }).map((it, index) => {
