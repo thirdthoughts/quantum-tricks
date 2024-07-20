@@ -8,7 +8,7 @@ import { flavors } from "~/_util/constants";
 import Link from "next/link";
 import StartGameButton from "../_components/StartGameButton";
 
-export default async function ViewLobby({
+export default async function LobbyPage({
   params,
 }: {
   params: { slug: number };

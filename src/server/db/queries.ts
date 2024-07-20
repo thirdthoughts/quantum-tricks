@@ -3,7 +3,7 @@ import "server-only";
 import { currentUser } from "@clerk/nextjs/server";
 import { db } from "~/server/db";
 import { game, gameLobby, type GamePlayer } from "./schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { flavors, PlayerBoard, ResearchBoard } from "~/_util/constants";
 import { revalidatePath } from "next/cache";
 import { Ratelimit } from "@upstash/ratelimit";
@@ -48,10 +48,6 @@ export async function createGameLobby(playerCount: number) {
 }
 
 export async function getGameLobbies() {
-  const games = await db.query.gameLobby.findMany({
-    where: eq(gameLobby.started, false),
-    orderBy: gameLobby.id,
-  });
   const user = await currentUser();
 
   if (!user) throw new Error("Invalid User, please log in and try again");
@@ -59,6 +55,10 @@ export async function getGameLobbies() {
   const { success } = await ratelimit.limit(user.id);
   if (!success) throw new Error("rate limit exceeded");
 
+  const games = await db.query.gameLobby.findMany({
+    where: eq(gameLobby.started, false),
+    orderBy: gameLobby.id,
+  });
   return games.map((g) => {
     const players = g.players.map((e) => {
       return {
@@ -323,7 +323,7 @@ export async function StartGameQuery(lobbyId: number) {
 
     //save state as a new game
     await tx.insert(game).values({
-      players: shuffledPlayers,
+      playerData: {players: shuffledPlayers},
       researchBoard: researchBoard,
       currentPlayerIndex: 0,
       currentRoundStartPlayerIndex: 0,
@@ -347,4 +347,13 @@ export async function StartGameQuery(lobbyId: number) {
 
 export async function getMyActiveGames() {
   //get a list of my ongoing games
+  const user = await currentUser();
+  if (!user) throw new Error("Invalid User, please log in and try again");
+
+  const { success } = await ratelimit.limit(user.id);
+  if (!success) throw new Error("rate limit exceeded");
+
+  return db.query.game.findMany({
+    where: sql.raw(`"playerData"->'players' @> '[{"playerId":"${user.id}"}]'`),
+  })
 }

@@ -5,7 +5,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   integer,
-  json,
+  jsonb,
   pgEnum,
   pgTableCreator,
   serial,
@@ -45,7 +45,7 @@ export const gameLobby = createTable(
     gameSize: integer("playerCount").notNull(),
     creatorId: varchar("creatorId", { length: 128 }).notNull(),
     creatorName: varchar("creatorName", { length: 128 }).notNull(),
-    players: json('players').$type<z.infer<typeof lobbyPlayerSchema>[]>().notNull(),
+    players: jsonb('players').$type<z.infer<typeof lobbyPlayerSchema>[]>().notNull(),
     started: boolean("started").default(false),
   },
 );
@@ -60,6 +60,10 @@ export type GamePlayer = {
   currentHand?: number[],
 }
 
+export type GamePlayerData = {
+  players: GamePlayer[]
+}
+
 export const game = createTable(
   "game",
   {
@@ -70,8 +74,8 @@ export const game = createTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
       () => new Date()
     ),
-    players: json('players').$type<GamePlayer[]>().notNull(), //This should be in player order and never change after creation
-    researchBoard: json('researchBoard').$type<ReturnType<typeof ResearchBoard>>().notNull(), //current state of the research board
+    playerData: jsonb('playerData').$type<GamePlayerData>().notNull(), //This should be in player order and never change after creation
+    researchBoard: jsonb('researchBoard').$type<ReturnType<typeof ResearchBoard>>().notNull(), //current state of the research board
     currentPlayerIndex:  integer("currentPlayerIndex").notNull().default(0), //player currently acting in the trick
     currentRoundStartPlayerIndex: integer("currentRoundStartPlayerIndex").notNull(), //player who acted first this round
     currentRoundLeadColor: pgColorEnum("currentRoundLeadColor"), //color that was used to lead this trick

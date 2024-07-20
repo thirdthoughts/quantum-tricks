@@ -1,6 +1,7 @@
 "use server";
 
 import Link from "next/link";
+import GameList from "~/_components/GameList";
 import { GameLobbyList } from "~/_components/GameLobbyList";
 
 export default async function HomePage() {
@@ -13,6 +14,8 @@ export default async function HomePage() {
 
           <div className="h-4"></div>
           <GameLobbyList></GameLobbyList>
+          <div className="h-4"></div>
+          <GameList></GameList>
         </div>
     </div>
   );
