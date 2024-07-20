@@ -344,3 +344,7 @@ export async function StartGameQuery(lobbyId: number) {
   if (!txResult) throw Err;
   return txResult;
 }
+
+export async function getMyActiveGames() {
+  //get a list of my ongoing games
+}

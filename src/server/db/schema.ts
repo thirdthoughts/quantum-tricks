@@ -75,6 +75,7 @@ export const game = createTable(
     currentPlayerIndex:  integer("currentPlayerIndex").notNull().default(0),
     currentRoundStartPlayerIndex: integer("currentRoundStartPlayerIndex").notNull(),
     currentRoundLeadColor: pgColorEnum("currentRoundLeadColor"),
-    currentRound: integer("currentRound").notNull().default(1)
+    currentRound: integer("currentRound").notNull().default(1),
+    finished: boolean("finished").default(false).notNull(),
   }
 );
