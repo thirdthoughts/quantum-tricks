@@ -43,6 +43,7 @@ export const gameLobby = createTable(
       () => new Date()
     ),
     gameSize: integer("playerCount").notNull(),
+    gameName: varchar("gameName", { length: 128 }).notNull(),
     creatorId: varchar("creatorId", { length: 128 }).notNull(),
     creatorName: varchar("creatorName", { length: 128 }).notNull(),
     players: jsonb('players').$type<z.infer<typeof lobbyPlayerSchema>[]>().notNull(),
@@ -74,6 +75,8 @@ export const game = createTable(
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
       () => new Date()
     ),
+    gameSize: integer("playerCount").notNull(),
+    gameName: varchar("gameName", { length: 128 }).notNull(),
     playerData: jsonb('playerData').$type<GamePlayerData>().notNull(), //This should be in player order and never change after creation
     researchBoard: jsonb('researchBoard').$type<ReturnType<typeof ResearchBoard>>().notNull(), //current state of the research board
     currentPlayerIndex:  integer("currentPlayerIndex").notNull().default(0), //player currently acting in the trick

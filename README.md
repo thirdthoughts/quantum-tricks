@@ -10,6 +10,10 @@
 [x] set up db for game lobby
 [x] attach db for game lobby
 [x] add auth
+[ ] oops
+    [ ] allow user to name game (default to "x's game")
+    [ ] save the game name to DB
+    [ ] transfer game name and size from lobby to game
 [ ] game functionality
     [ ] see my active games on home page
     [ ] game setup + view game

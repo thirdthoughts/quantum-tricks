@@ -23,7 +23,7 @@ const ratelimit = new Ratelimit({
   prefix: "@upstash/ratelimit/quantum-tricks",
 });
 
-export async function createGameLobby(playerCount: number) {
+export async function createGameLobby(playerCount: number, gameName: string) {
   const user = await currentUser();
   if (!user) throw new Error("Invalid User, please log in and try again");
 
@@ -32,6 +32,7 @@ export async function createGameLobby(playerCount: number) {
 
   await db.insert(gameLobby).values({
     creatorId: user.id,
+    gameName: gameName,
     creatorName: user.username ?? user.fullName ?? user.id,
     players: [
       {
@@ -324,6 +325,8 @@ export async function StartGameQuery(lobbyId: number) {
     //save state as a new game
     await tx.insert(game).values({
       playerData: {players: shuffledPlayers},
+      gameName: lobby.gameName,
+      gameSize: lobby.gameSize,
       researchBoard: researchBoard,
       currentPlayerIndex: 0,
       currentRoundStartPlayerIndex: 0,
