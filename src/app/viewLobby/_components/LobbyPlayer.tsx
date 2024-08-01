@@ -4,7 +4,7 @@ import { type z } from "zod";
 import { type playerSchema } from "~/_util/validation";
 import { SVGFilledDot } from "~/_svg/filledDot";
 import { FlavorIcon } from "~/_svg/flavorIcons";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/_components/ui/button";
 import { useRouter } from "next/navigation";
 
 export default function LobbyPlayer({

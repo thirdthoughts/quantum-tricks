@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FlavorIcon } from "~/_svg/flavorIcons";
 import { type flavors } from "~/_util/constants";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/_components/ui/button";
 
 export default function LobbyJoiner({
   params,

@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "~/components/ui/button";
+import { Button } from "~/_components/ui/button";
 
 export default function StartGameButton ({lobbyId, Start} : {lobbyId:number; Start: (lobbyId: number) => void}) {
     return (<Button variant={"do"}

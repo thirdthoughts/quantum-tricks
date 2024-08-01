@@ -4,7 +4,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "~/components/ui/tooltip";
+} from "~/_components/ui/tooltip";
 
 function iconSwitch(flavor: (typeof flavors)[number]) {
   switch (flavor) {

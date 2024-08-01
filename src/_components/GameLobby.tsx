@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { type z } from "zod";
 import { type gameSchema } from "~/_util/validation";
-import { Button } from "~/components/ui/button";
+import { Button } from "~/_components/ui/button";
 
 export default function GameLobby({
   gameLobby,
