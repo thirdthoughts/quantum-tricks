@@ -1,17 +1,36 @@
 "use client";
+import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/_components/ui/button";
+import { Input } from "~/_components/ui/input";
 import { CreateLobby } from "~/server/actions";
 
 export default function CreateGame() {
   const [playerCount, setPlayerCount] = useState(4);
+  const { user, isLoaded } = useUser();
+
+  const [gameName, setGameName] = useState(
+    `${user?.username ?? user?.fullName ?? user?.id}'s game`,
+  );
+
+  if (!user || !isLoaded) return null;
+
   const router = useRouter();
   return (
     <div className="m-auto items-center justify-center gap-1 text-center">
-      <div>New Game</div>
+      <div>
+        New Game
+        <Input
+          type="text"
+          value={gameName}
+          onChange={(e) => {
+            setGameName(e.target.value);
+          }}
+        ></Input>{" "}
+      </div>
       <div className="h-4"></div>
       <div className="flex items-center">
         <ul className="flex items-center gap-2">
@@ -80,7 +99,7 @@ export default function CreateGame() {
           onMouseDown={async (eventData) => {
             if (eventData.button === 0) {
               //TODO change this to a form/action type submit etc
-              const success = await CreateLobby(playerCount);
+              const success = await CreateLobby(playerCount, gameName);
               if (success) toast.info(`Game Created`);
               router.push("/");
             }
