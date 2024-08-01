@@ -14,7 +14,7 @@
     [x] allow user to name game (default to "x's game")
     [x] save the game name to DB
     [x] transfer game name and size from lobby to game
-    [ ] show game name in game lobby views (list and single)
+    [x] show game name in game lobby views (list and single)
 [ ] game functionality
     [ ] see my active games on home page
     [ ] game setup + view game

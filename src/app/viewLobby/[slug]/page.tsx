@@ -35,6 +35,8 @@ export default async function LobbyPage({
           )}
       </div>
       <div className="h-4"></div>
+      <div> {gameLobby.gameName}</div>
+      <div className="h-4"></div>
       <div className="flex max-w-xl flex-col gap-1">
         <div className="flex flex-row gap-1">
           <div className="flex w-1/12 rounded-tl-lg bg-slate-500 p-1"></div>

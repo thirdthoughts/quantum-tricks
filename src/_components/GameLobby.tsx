@@ -20,7 +20,7 @@ export default function GameLobby({
   return (
     <div className="flex flex-row gap-1">
       <div className="flex w-1/12 bg-blue-700 p-1">{gameLobby.playerCount}</div>
-      <div className="flex w-1/3 bg-blue-700 p-1">{gameLobby.creator}</div>
+      <div className="flex w-1/3 bg-blue-700 p-1">{gameLobby.gameName}</div>
       <div className="flex w-1/6 bg-blue-700 p-1">
         {gameLobby.playerCount - gameLobby.players.length}
       </div>

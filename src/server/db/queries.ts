@@ -78,6 +78,7 @@ export async function getGameLobbies() {
       players: players,
       mine: g.creatorId === user.id,
       alreadyIn,
+      gameName: g.gameName,
     };
     return lobby;
   });
@@ -112,6 +113,7 @@ export async function getGameLobby(id: number) {
     players: players,
     mine: g.creatorId === user.id,
     alreadyIn,
+    gameName: g.gameName,
   };
   return lobby;
 }
@@ -324,7 +326,7 @@ export async function StartGameQuery(lobbyId: number) {
 
     //save state as a new game
     await tx.insert(game).values({
-      playerData: {players: shuffledPlayers},
+      playerData: { players: shuffledPlayers },
       gameName: lobby.gameName,
       gameSize: lobby.gameSize,
       researchBoard: researchBoard,
@@ -341,7 +343,7 @@ export async function StartGameQuery(lobbyId: number) {
       })
       .where(eq(gameLobby.id, lobbyId));
 
-      return true;
+    return true;
   });
 
   if (!txResult) throw Err;
@@ -358,5 +360,5 @@ export async function getMyActiveGames() {
 
   return db.query.game.findMany({
     where: sql.raw(`"playerData"->'players' @> '[{"playerId":"${user.id}"}]'`),
-  })
+  });
 }

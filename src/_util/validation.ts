@@ -13,6 +13,7 @@ export const gameSchema = z.object({
     creator: z.string(),
     mine: z.boolean(),
     alreadyIn: z.boolean(),
+    gameName: z.string(),
     players: z
       .array(
         playerSchema
