@@ -5,7 +5,7 @@ import { type z } from "zod";
 import { type gameSchema } from "~/_util/validation";
 import { Button } from "~/_components/ui/button";
 
-export default function GameLobby({
+export default function GameLobbyListView({
   gameLobby,
   Join,
   Leave,

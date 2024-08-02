@@ -15,10 +15,10 @@ export default function CreateGame() {
   const [gameName, setGameName] = useState(
     `${user?.username ?? user?.fullName ?? user?.id}'s game`,
   );
+  const router = useRouter();
 
   if (!user || !isLoaded) return null;
 
-  const router = useRouter();
   return (
     <div className="m-auto items-center justify-center gap-1 text-center">
       <div>

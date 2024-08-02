@@ -1,7 +1,7 @@
 "use server";
 
 import { getGameLobbies } from "~/server/db/queries";
-import GameLobby from "./GameLobby";
+import GameLobbyListView from "./GameLobbyListView";
 import { JoinLobby, LeaveLobby } from "~/server/actions";
 
 export async function GameLobbyList() {
@@ -20,7 +20,7 @@ export async function GameLobbyList() {
         </div>
       </div>
       {games.map((g) => (
-        <GameLobby key={g.id} gameLobby={g} Join={JoinLobby} Leave={LeaveLobby}></GameLobby>
+        <GameLobbyListView key={g.id} gameLobby={g} Join={JoinLobby} Leave={LeaveLobby}></GameLobbyListView>
       ))}
       {
         !games?.length && <p>No lobbies available now, create your own!</p>

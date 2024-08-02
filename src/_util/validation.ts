@@ -32,3 +32,5 @@ export type ResearchBoardType = {
   yellow: (typeof flavors[number] | number)[]
   green: (typeof flavors[number] | number)[]
 }
+
+export type PromiseResolvedType<T> = T extends Promise<infer R> ? R : never;
